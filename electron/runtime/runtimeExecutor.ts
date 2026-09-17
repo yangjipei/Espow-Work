@@ -1,4 +1,5 @@
 import { EspowToolService, type ToolExecutionContext, type ToolName } from '../tools/toolService'
+import { getEspowToolContract } from '../../src/tools'
 
 export type FollowupReason = 'NO_FOLLOWUP' | 'NEW_INFORMATION' | 'CONFLICT_FOUND' | 'EXECUTION_FAILED' | 'REPLAN_REQUIRED' | 'MISSING_CONTEXT'
 
@@ -6,14 +7,6 @@ export interface FollowupDecision {
   required: boolean
   reason: FollowupReason
 }
-
-const discoveryTools = new Set<ToolName>([
-  'workspace_read', 'artifact_find', 'artifact_read', 'artifact_next_version',
-  'business_flow_next_version', 'business_flow_ready', 'solution_design_next_version',
-  'solution_coverage_check', 'solution_overdesign_check', 'interaction_design_next_version',
-  'interaction_design_ready', 'prototype_ready', 'product_spec_next_version', 'product_spec_ready',
-  'requirement_review_next_version', 'requirement_review_ready', 'requirement_review_status', 'artifact_diff'
-])
 
 const terminalResults: Array<[string, string]> = [
   ['changeResult', '需求变更影响分析已完成。'],
@@ -44,7 +37,7 @@ function terminalReply(output: Record<string, unknown>): string | null {
 
 export function decideFollowup(name: ToolName, output: Record<string, unknown>): FollowupDecision {
   if (terminalReply(output)) return { required: false, reason: 'NO_FOLLOWUP' }
-  if (discoveryTools.has(name)) return { required: true, reason: 'NEW_INFORMATION' }
+  if (getEspowToolContract(name)?.followup === 'always') return { required: true, reason: 'NEW_INFORMATION' }
   if (output.status === 'conflict' || output.status === 'stale') return { required: true, reason: 'CONFLICT_FOUND' }
   return { required: false, reason: 'NO_FOLLOWUP' }
 }

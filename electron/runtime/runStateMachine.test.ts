@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { canBeginCancellation, canResolveApproval, isRunWritable, isTerminalRunStatus } from './runStateMachine.ts'
+import { canBeginCancellation, canResolveApproval, isRunWritable, isTerminalRunStatus } from './runStateMachine'
 
 test('run state machine keeps terminal and writable boundaries explicit', () => {
   assert.equal(isRunWritable('Running'), true)

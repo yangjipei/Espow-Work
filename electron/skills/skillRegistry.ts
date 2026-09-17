@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { parse as parseYaml } from 'yaml'
 import type { SkillSelection } from '../../src/skills'
+import { getEspowToolContract } from '../../src/tools'
 
 interface SkillContract extends SkillSelection {
   description: string
@@ -96,10 +97,13 @@ export class SkillRegistry {
       || modes.length !== expectedModes.length || modes.some((mode, index) => mode !== expectedModes[index])) {
       throw new Error(`${id} Skill Contract 无效。`)
     }
+    const allowedTools = stringList(raw.allowed_tools, 'allowed_tools')
+    const unknownTools = allowedTools.filter((tool) => !getEspowToolContract(tool))
+    if (unknownTools.length) throw new Error(`${id} Skill Contract 引用了未注册 Tool：${unknownTools.join('、')}`)
     this.contracts.set(id, {
       id, name, description: raw.description, version: raw.version, mode: modes.at(-1)!, modes,
       inputs: stringList(raw.inputs, 'inputs'), outputs: stringList(raw.outputs, 'outputs'),
-      allowed_tools: stringList(raw.allowed_tools, 'allowed_tools')
+      allowed_tools: allowedTools
     })
     const full = readFileSync(join(directory, 'SKILL.md'), 'utf8').trim()
     this.instructions.set(id, full)

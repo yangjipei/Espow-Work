@@ -347,6 +347,44 @@
       }
     },
     {
+      "id": "runtime-safety",
+      "name": "Runtime 生命周期与跨 Run 安全",
+      "aliases": ["Runtime 生命周期", "Run 生命周期", "取消 Run", "Run 取消", "跨 Run", "activeRunId", "Tool Bridge", "runId 隔离", "终止 Tool", "terminal Tool", "多 Tool Call", "Tool Registry", "工具注册表", "Runtime 重启", "Runtime 子进程", "请求超时", "runStateMachine"],
+      "defaultScope": "lifecycle",
+      "scopes": {
+        "lifecycle": {
+          "keywords": ["取消", "Cancelling", "Cancelled", "终态", "状态", "释放", "重叠", "并发", "activeRunId", "退出", "重启", "超时", "子进程"],
+          "primary": ["electron/agentTaskService.ts", "electron/runtime/runtimeService.ts", "electron/runtime/espowRuntime.ts", "espow-runtime/src/main.rs", "electron/runtime/runStateMachine.ts"],
+          "related": ["espow-runtime/src/agent/mod.rs", "espow-runtime/src/protocol/mod.rs", "electron/persistenceService.ts", "src/runtime.ts", "src/persistence.ts"],
+          "tests": ["electron/agentTaskService.test.ts", "electron/runtime/runtimeService.test.ts", "electron/runtime/runStateMachine.test.ts", "electron/persistenceService.test.ts"]
+        },
+        "bridge": {
+          "keywords": ["Bridge", "runId", "隔离", "延迟请求", "旧 Run", "Token", "Bearer", "非法 JSON", "未知 Tool", "超大请求", "重复 callId"],
+          "primary": ["electron/tools/toolBridge.ts", "electron/runtime/runtimeService.ts", "espow-runtime/src/agent/mod.rs"],
+          "related": ["electron/runtime/runtimeExecutor.ts", "electron/tools/toolService.ts", "espow-runtime/src/protocol/mod.rs", "src/tools.ts"],
+          "tests": ["electron/runtime/runtimeService.test.ts", "electron/runtime/runtimeExecutor.test.ts", "electron/tools/toolService.test.ts"]
+        },
+        "terminal-tool": {
+          "keywords": ["终止 Tool", "terminal", "多 Tool", "Tool Call", "跳过", "唯一", "Follow-up"],
+          "primary": ["espow-runtime/src/agent/mod.rs", "electron/runtime/runtimeExecutor.ts", "electron/runtime/executionPolicy.ts"],
+          "related": ["espow-runtime/src/model/mod.rs", "espow-runtime/src/protocol/mod.rs", "src/tools.ts"],
+          "tests": ["electron/runtime/runtimeExecutor.test.ts", "electron/runtime/executionPolicy.test.ts"]
+        },
+        "registry": {
+          "keywords": ["Registry", "注册表", "多处来源", "漂移", "Schema", "权限", "风险", "审批", "Skill", "阶段", "Follow-up"],
+          "primary": ["src/tools.ts", "electron/tools/toolService.ts", "electron/runtime/toolResolver.ts", "electron/runtime/executionPolicy.ts", "electron/runtime/runtimeExecutor.ts"],
+          "related": ["electron/tools/toolBridge.ts", "electron/runtime/runtimeService.ts", "electron/skills/skillRegistry.ts", "src/skills.ts"],
+          "tests": ["electron/tools/toolService.test.ts", "electron/runtime/toolResolver.test.ts", "electron/runtime/executionPolicy.test.ts", "electron/runtime/runtimeExecutor.test.ts", "electron/skills/skillRegistry.test.ts"]
+        },
+        "tests": {
+          "keywords": ["测试", "验证", "TypeScript", "tsconfig", "allowImportingTsExtensions", "漏测", "test:unit"],
+          "primary": ["electron/runtime/runStateMachine.test.ts", "tsconfig.test.json", "tsconfig.json", "package.json"],
+          "related": ["electron/runtime/runStateMachine.ts", "electron/agentTaskService.test.ts", "electron/runtime/runtimeService.test.ts"],
+          "tests": []
+        }
+      }
+    },
+    {
       "id": "diagnostics-observability",
       "name": "诊断与运行可观测性",
       "aliases": ["诊断", "错误上报", "日志", "Breadcrumb", "诊断包", "远程报告", "运行可观测性"],

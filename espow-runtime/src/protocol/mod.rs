@@ -135,6 +135,7 @@ pub struct RuntimeModelConfig {
 pub struct ToolBridgeConfig {
     pub url: String,
     pub token: String,
+    pub run_id: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -142,6 +143,8 @@ pub struct ToolSpec {
     pub name: String,
     pub description: String,
     pub parameters: Value,
+    #[serde(default)]
+    pub terminal: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]

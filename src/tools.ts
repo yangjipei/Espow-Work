@@ -14,6 +14,8 @@ export interface EspowToolContract {
   permission: ToolPermission
   riskLevel: ToolRiskLevel
   requiresApproval: boolean
+  terminal?: boolean
+  followup?: 'always' | 'on-signal' | 'never'
   errors: string[]
 }
 
@@ -267,16 +269,20 @@ const changeResultSchema = {
   fieldRequired: true
 }
 
-export const espowToolContracts: EspowToolContract[] = [
+function defineToolContracts<const T extends EspowToolContract[]>(contracts: T): T {
+  return contracts
+}
+
+export const espowToolContracts = defineToolContracts([
   {
-    id: 'workspace_read', name: 'workspace_read', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'workspace_read', name: 'workspace_read', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Read a compact summary of the current ESPow Requirement Workspace, including Artifact metadata, decisions, and open issues. Never returns all file contents or chat history.',
     inputSchema: identity,
     outputSchema: { type: 'json' },
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'REQUIREMENT_NOT_FOUND']
   },
   {
-    id: 'artifact_find', name: 'artifact_find', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'artifact_find', name: 'artifact_find', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Find candidate Artifacts in the current Requirement by type, title, workspace-relative path, or query. Returns every plausible candidate; do not assume the first is uniquely correct.',
     inputSchema: {
       ...identity,
@@ -289,7 +295,7 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE']
   },
   {
-    id: 'artifact_read', name: 'artifact_read', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'artifact_read', name: 'artifact_read', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Read one already located Markdown, text, HTML, or JSON Artifact by Artifact id or approved Requirement-relative path. Use artifact_find first when the target is ambiguous.',
     inputSchema: {
       ...identity,
@@ -301,7 +307,7 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'ARTIFACT_NOT_FOUND', 'UNSUPPORTED_FORMAT', 'FILE_TOO_LARGE', 'SECTION_NOT_FOUND']
   },
   {
-    id: 'change_result_submit', name: 'change_result_submit', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'change_result_submit', name: 'change_result_submit', permission: 'read', riskLevel: 'low', requiresApproval: false, terminal: true, followup: 'never',
     description: 'Submit the structured Requirement Change assessment for the current Run. This records semantic judgment only and never changes Workspace files.',
     inputSchema: {
       ...identity,
@@ -311,7 +317,7 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE']
   },
   {
-    id: 'analysis_turn_submit', name: 'analysis_turn_submit', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'analysis_turn_submit', name: 'analysis_turn_submit', permission: 'read', riskLevel: 'low', requiresApproval: false, terminal: true, followup: 'never',
     description: 'Terminal tool for one Requirement Analysis conversation turn. Submit only the incremental Analysis State patch plus the final user-facing reply. Runtime deterministically merges state, resolves questions, detects structural conflicts, computes readiness, builds the next projection, and ends the turn without another model call.',
     inputSchema: {
       ...identity,
@@ -358,14 +364,14 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'APPROVAL_REQUIRED', 'SOURCE_CHANGED', 'WRITE_FAILED']
   },
   {
-    id: 'business_flow_next_version', name: 'business_flow_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'business_flow_next_version', name: 'business_flow_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Deterministically calculate the next paired Business Flow model and HTML version from the current Requirement files.',
     inputSchema: identity,
     outputSchema: { type: 'json' },
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE']
   },
   {
-    id: 'business_flow_ready', name: 'business_flow_ready', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'business_flow_ready', name: 'business_flow_ready', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Validate Business Flow graph structure and explicit semantic closure before it can be shown for product-manager confirmation.',
     inputSchema: {
       ...identity,
@@ -375,7 +381,7 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'PREREQUISITE_NOT_READY']
   },
   {
-    id: 'business_flow_submit', name: 'business_flow_submit', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'business_flow_submit', name: 'business_flow_submit', permission: 'read', riskLevel: 'low', requiresApproval: false, terminal: true, followup: 'never',
     description: 'Record a structured Business Flow candidate and deterministically render its HTML preview. This never writes Workspace files.',
     inputSchema: {
       ...identity,
@@ -396,24 +402,24 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'APPROVAL_REQUIRED', 'FLOW_NOT_READY', 'SOURCE_CHANGED', 'TARGET_EXISTS', 'WRITE_FAILED']
   },
   {
-    id: 'solution_design_next_version', name: 'solution_design_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'solution_design_next_version', name: 'solution_design_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Deterministically calculate the next paired Solution Design model and Markdown version from current Requirement files.',
     inputSchema: identity, outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE']
   },
   {
-    id: 'solution_coverage_check', name: 'solution_coverage_check', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'solution_coverage_check', name: 'solution_coverage_check', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Check Capability traceability and coverage of the confirmed goal, scenarios, flow nodes, blockers, exits, exceptions, and recovery.',
     inputSchema: { ...identity, resultJson: { type: 'string', required: true, description: 'Complete structured Solution Design JSON candidate.' } },
     outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE']
   },
   {
-    id: 'solution_overdesign_check', name: 'solution_overdesign_check', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'solution_overdesign_check', name: 'solution_overdesign_check', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Check the Solution candidate for ungrounded platform scope, premature technical design, and unrelated capabilities.',
     inputSchema: { ...identity, resultJson: { type: 'string', required: true, description: 'Complete structured Solution Design JSON candidate.' } },
     outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE']
   },
   {
-    id: 'solution_design_submit', name: 'solution_design_submit', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'solution_design_submit', name: 'solution_design_submit', permission: 'read', riskLevel: 'low', requiresApproval: false, terminal: true, followup: 'never',
     description: 'Record a structured Solution Design candidate and deterministically render its Markdown preview without writing Workspace files.',
     inputSchema: {
       ...identity,
@@ -431,18 +437,18 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'APPROVAL_REQUIRED', 'SOLUTION_NOT_READY', 'SOURCE_CHANGED', 'TARGET_EXISTS', 'WRITE_FAILED']
   },
   {
-    id: 'interaction_design_next_version', name: 'interaction_design_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'interaction_design_next_version', name: 'interaction_design_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Deterministically calculate the next paired Interaction Design model and Markdown version from current Requirement files.',
     inputSchema: identity, outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE']
   },
   {
-    id: 'interaction_design_ready', name: 'interaction_design_ready', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'interaction_design_ready', name: 'interaction_design_ready', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Validate that capabilities have surfaces, actions have entries and results, states and references are complete, and semantic interaction checks pass.',
     inputSchema: { ...identity, resultJson: { type: 'string', required: true, description: 'Complete structured Interaction Design JSON candidate.' } },
     outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'PREREQUISITE_NOT_READY', 'SOURCE_CHANGED']
   },
   {
-    id: 'interaction_design_submit', name: 'interaction_design_submit', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'interaction_design_submit', name: 'interaction_design_submit', permission: 'read', riskLevel: 'low', requiresApproval: false, terminal: true, followup: 'never',
     description: 'Record a structured Interaction Design candidate and deterministically render its Markdown preview without writing Workspace files.',
     inputSchema: {
       ...identity,
@@ -460,7 +466,7 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'APPROVAL_REQUIRED', 'INTERACTION_NOT_READY', 'SOURCE_CHANGED', 'TARGET_EXISTS', 'WRITE_FAILED']
   },
   {
-    id: 'prototype_ready', name: 'prototype_ready', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'prototype_ready', name: 'prototype_ready', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Validate a self-contained HTML Prototype candidate, its required DOM, interaction bindings, source traceability, script syntax, and target version before confirmation.',
     inputSchema: {
       ...identity,
@@ -472,7 +478,7 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'PREREQUISITE_NOT_READY', 'SOURCE_CHANGED', 'PROTOTYPE_NOT_READY']
   },
   {
-    id: 'prototype_submit', name: 'prototype_submit', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'prototype_submit', name: 'prototype_submit', permission: 'read', riskLevel: 'low', requiresApproval: false, terminal: true, followup: 'never',
     description: 'Record the validated Prototype HTML candidate, deterministic diff, version, references, and validation without writing Workspace files.',
     inputSchema: {
       ...identity,
@@ -491,18 +497,18 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'APPROVAL_REQUIRED', 'PROTOTYPE_NOT_READY', 'SOURCE_CHANGED', 'TARGET_EXISTS', 'WRITE_FAILED']
   },
   {
-    id: 'product_spec_next_version', name: 'product_spec_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'product_spec_next_version', name: 'product_spec_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Deterministically calculate the next paired Product Spec model and versioned PRD Markdown path from current Requirement files.',
     inputSchema: identity, outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE']
   },
   {
-    id: 'product_spec_ready', name: 'product_spec_ready', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'product_spec_ready', name: 'product_spec_ready', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Validate Product Spec prerequisites, capability/rule/state/field/error completeness, traceability, conflicts, open issues, prototype consistency, and acceptance criteria.',
     inputSchema: { ...identity, resultJson: { type: 'string', required: true, description: 'Complete structured Product Spec JSON candidate.' } },
     outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'PREREQUISITE_NOT_READY', 'SOURCE_CHANGED']
   },
   {
-    id: 'product_spec_submit', name: 'product_spec_submit', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'product_spec_submit', name: 'product_spec_submit', permission: 'read', riskLevel: 'low', requiresApproval: false, terminal: true, followup: 'never',
     description: 'Record a structured Product Spec candidate and deterministically render the PRD Markdown preview without writing Workspace files.',
     inputSchema: { ...identity, expectedVersion: { type: 'number', required: true }, resultJson: { type: 'string', required: true } },
     outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'PREREQUISITE_NOT_READY', 'PRODUCT_SPEC_NOT_READY', 'SOURCE_CHANGED', 'VERSION_CONFLICT']
@@ -514,24 +520,24 @@ export const espowToolContracts: EspowToolContract[] = [
     outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'APPROVAL_REQUIRED', 'PRODUCT_SPEC_NOT_READY', 'SOURCE_CHANGED', 'TARGET_EXISTS', 'WRITE_FAILED']
   },
   {
-    id: 'requirement_review_next_version', name: 'requirement_review_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'requirement_review_next_version', name: 'requirement_review_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Resolve the next Requirement Review version and fingerprint the current effective review dependencies.',
     inputSchema: identity, outputSchema: { type: 'json' }, errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'PREREQUISITE_NOT_READY']
   },
   {
-    id: 'requirement_review_ready', name: 'requirement_review_ready', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'requirement_review_ready', name: 'requirement_review_ready', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Validate ReviewIssue evidence, severity/result consistency, dependency coverage, and the confirmed Product Spec prerequisite.',
     inputSchema: { ...identity, resultJson: { type: 'string', required: true } }, outputSchema: { type: 'json' },
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'PREREQUISITE_NOT_READY', 'SOURCE_CHANGED']
   },
   {
-    id: 'requirement_review_submit', name: 'requirement_review_submit', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'requirement_review_submit', name: 'requirement_review_submit', permission: 'read', riskLevel: 'low', requiresApproval: false, terminal: true, followup: 'never',
     description: 'Record the structured Requirement Review and render its Markdown candidate without modifying reviewed Artifacts.',
     inputSchema: { ...identity, expectedVersion: { type: 'number', required: true }, resultJson: { type: 'string', required: true } }, outputSchema: { type: 'json' },
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'PREREQUISITE_NOT_READY', 'REVIEW_NOT_READY', 'SOURCE_CHANGED', 'VERSION_CONFLICT']
   },
   {
-    id: 'requirement_review_status', name: 'requirement_review_status', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'requirement_review_status', name: 'requirement_review_status', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Compare a Review dependency snapshot with current files and return CURRENT or STALE deterministically.',
     inputSchema: { ...identity, reviewPath: { type: 'string', required: true } }, outputSchema: { type: 'json' },
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'ARTIFACT_NOT_FOUND']
@@ -543,7 +549,7 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'APPROVAL_REQUIRED', 'REVIEW_NOT_READY', 'SOURCE_CHANGED', 'TARGET_EXISTS', 'WRITE_FAILED']
   },
   {
-    id: 'artifact_next_version', name: 'artifact_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'artifact_next_version', name: 'artifact_next_version', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Deterministically calculate the next legal versioned filename for an Artifact from real files in the current Requirement. Never guess version numbers.',
     inputSchema: {
       ...identity,
@@ -555,7 +561,7 @@ export const espowToolContracts: EspowToolContract[] = [
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'ARTIFACT_NOT_FOUND', 'VERSION_CONFLICT']
   },
   {
-    id: 'artifact_diff', name: 'artifact_diff', permission: 'read', riskLevel: 'low', requiresApproval: false,
+    id: 'artifact_diff', name: 'artifact_diff', permission: 'read', riskLevel: 'low', requiresApproval: false, followup: 'always',
     description: 'Generate a deterministic structured diff between one real Artifact and candidate content. This creates a candidate only and never writes a file.',
     inputSchema: {
       ...identity,
@@ -589,4 +595,12 @@ export const espowToolContracts: EspowToolContract[] = [
     outputSchema: { type: 'json' },
     errors: ['INVALID_INPUT', 'WORKSPACE_SCOPE', 'VALIDATION_FAILED']
   }
-]
+])
+
+export type EspowToolName = (typeof espowToolContracts)[number]['name']
+
+const espowToolContractsByName = new Map<string, EspowToolContract>(espowToolContracts.map((tool) => [tool.name, tool]))
+
+export function getEspowToolContract(name: string): EspowToolContract | undefined {
+  return espowToolContractsByName.get(name)
+}

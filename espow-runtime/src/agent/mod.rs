@@ -1,5 +1,5 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use reqwest::Client;
 use serde_json::{json, Value};
@@ -28,6 +28,10 @@ pub enum AgentError {
     InputBudgetExceeded { estimated: usize, limit: usize },
     #[error("required terminal tool was not called: {0}")]
     MissingTerminalTool(String),
+    #[error("terminal tool must be the only tool call in a model response: {0}")]
+    TerminalToolMustBeExclusive(String),
+    #[error("tool bridge run identity does not match active run")]
+    ToolBridgeRunMismatch,
 }
 
 fn now() -> String {
@@ -137,6 +141,25 @@ fn followup_decision(output: &Value) -> (bool, String) {
         .unwrap_or("NEW_INFORMATION")
         .to_string();
     (required, reason)
+}
+
+fn conflicting_terminal_call<'a>(
+    tools: &[crate::protocol::ToolSpec],
+    required_terminal: Option<&str>,
+    calls: &'a [crate::model::AssistantToolCall],
+) -> Option<&'a str> {
+    if calls.len() < 2 {
+        return None;
+    }
+    let terminal_names: HashSet<&str> = tools
+        .iter()
+        .filter(|tool| tool.terminal)
+        .map(|tool| tool.name.as_str())
+        .collect();
+    calls
+        .iter()
+        .map(|call| call.function.name.as_str())
+        .find(|name| terminal_names.contains(name) || required_terminal == Some(*name))
 }
 
 fn prompt_metrics(
@@ -299,6 +322,19 @@ pub async fn run_agent(
     transport: SharedTransport,
 ) -> Result<(), AgentError> {
     emit(&transport, &params, RuntimeEventData::RunStarted).await;
+    if params.tool_bridge.run_id != params.run_id {
+        let error = AgentError::ToolBridgeRunMismatch;
+        emit(
+            &transport,
+            &params,
+            RuntimeEventData::RunFailed {
+                error: error.to_string(),
+                code: "tool-bridge-run-mismatch".into(),
+            },
+        )
+        .await;
+        return Err(error);
+    }
     let provider = match OpenAiCompatibleProvider::new() {
         Ok(provider) => provider,
         Err(error) => {
@@ -537,6 +573,25 @@ pub async fn run_agent(
             return Ok(());
         }
 
+        if let Some(tool_name) = conflicting_terminal_call(
+            &params.tools,
+            params.terminal_tool.as_deref(),
+            &result.tool_calls,
+        ) {
+            let tool_name = tool_name.to_string();
+            let error = AgentError::TerminalToolMustBeExclusive(tool_name.clone());
+            emit(
+                &transport,
+                &params,
+                RuntimeEventData::RunFailed {
+                    error: error.to_string(),
+                    code: "terminal-tool-must-be-exclusive".into(),
+                },
+            )
+            .await;
+            return Err(error);
+        }
+
         let assistant_content = result.content.clone();
         messages.push(ChatMessage {
             role: "assistant".into(),
@@ -651,7 +706,8 @@ pub async fn run_agent(
             let request = tool_client
                 .post(&params.tool_bridge.url)
                 .bearer_auth(&params.tool_bridge.token)
-                .json(&json!({ "callId": call.id, "name": tool_name, "args": args }))
+                .json(&json!({ "runId": params.tool_bridge.run_id, "callId": call.id, "name": tool_name, "args": args }))
+                .timeout(Duration::from_secs(30))
                 .send();
 
             let response = tokio::select! {
@@ -878,6 +934,33 @@ mod tests {
     }
 
     #[test]
+    fn terminal_tool_must_be_the_only_call_in_a_response() {
+        let tools = vec![crate::protocol::ToolSpec {
+            name: "analysis_turn_submit".into(),
+            description: "submit".into(),
+            parameters: json!({ "type": "object" }),
+            terminal: true,
+        }];
+        let call = |id: &str, name: &str| crate::model::AssistantToolCall {
+            id: id.into(),
+            kind: "function".into(),
+            function: crate::model::AssistantFunction {
+                name: name.into(),
+                arguments: "{}".into(),
+            },
+        };
+        let calls = vec![
+            call("read", "artifact_read"),
+            call("submit", "analysis_turn_submit"),
+        ];
+        assert_eq!(
+            conflicting_terminal_call(&tools, None, &calls),
+            Some("analysis_turn_submit")
+        );
+        assert_eq!(conflicting_terminal_call(&tools, None, &calls[..1]), None);
+    }
+
+    #[test]
     fn followup_gate_defaults_to_compatibility_and_honors_runtime_decision() {
         assert_eq!(
             followup_decision(&json!({})),
@@ -921,6 +1004,7 @@ mod tests {
             tool_bridge: crate::protocol::ToolBridgeConfig {
                 url: "http://127.0.0.1".into(),
                 token: "test".into(),
+                run_id: "run-1".into(),
             },
             max_steps: 2,
             max_model_calls: 2,

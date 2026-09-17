@@ -506,6 +506,7 @@ mod tests {
             name: "analysis_turn_submit".into(),
             description: "submit".into(),
             parameters: json!({ "type": "object" }),
+            terminal: true,
         };
         let body = request_body(
             &model_config("deepseek"),

@@ -212,7 +212,12 @@ export class EspowRuntime implements AgentRuntime {
     this.runQueues.set(request.runId, queue)
     this.activeRunId = request.runId
     try {
-      await this.request('run.start', request, 30_000)
+      try {
+        await this.request('run.start', request, 30_000)
+      } catch (error) {
+        await this.request('run.cancel', { runId: request.runId }, 2_000).catch(() => undefined)
+        throw error
+      }
       while (true) {
         const event = await queue.next()
         if (!event) break

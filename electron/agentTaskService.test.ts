@@ -157,6 +157,64 @@ test('明确槽位更新不要求模型配置且不会进入 Runtime', async (t)
   assert.equal(runtimeCalls, 0)
 })
 
+test('取消请求被接收后保持 Cancelling，直到 Runtime 发出 run_cancelled 才释放下一 Run', async (t) => {
+  const directory = await fs.mkdtemp(join(tmpdir(), 'espow-cancel-lifecycle-'))
+  t.after(() => fs.rm(directory, { recursive: true, force: true }))
+  const workspaceRoot = join(directory, 'workspace')
+  await fs.mkdir(workspaceRoot)
+  const workspace = new LocalWorkspaceService()
+  const initial = await workspace.scan(workspaceRoot)
+  const persistence = new PersistenceService(join(directory, 'app.sqlite'))
+  t.after(() => persistence.close())
+  persistence.saveWorkspace({ id: initial.id, path: initial.rootPath, name: initial.name })
+  persistence.saveModelConfig({ provider: 'openai', apiKey: 'test-only', model: 'test', baseUrl: 'https://example.com/v1' })
+  const created = await new RequirementService(workspace, persistence).create({ name: '取消生命周期' })
+
+  let finishCancellation!: () => void
+  const cancellation = new Promise<void>((resolve) => { finishCancellation = resolve })
+  let runtimeStarted!: () => void
+  const startedInRuntime = new Promise<void>((resolve) => { runtimeStarted = resolve })
+  let cancelledRunId: string | null = null
+  const runtime = {
+    async run(_cwd: string, _config: unknown, identity: { runId: string; threadId: string; turnId: string }): Promise<AsyncIterable<RuntimeEvent>> {
+      runtimeStarted()
+      return (async function* () {
+        yield { type: 'run_started', ...identity } as RuntimeEvent
+        await cancellation
+        yield { type: 'run_cancelled', ...identity } as RuntimeEvent
+      })()
+    },
+    async cancel(runId: string) { cancelledRunId = runId; return true },
+    async shutdown() {}
+  } as unknown as RuntimeService
+  const service = new AgentTaskService(
+    persistence, workspace, runtime, new EspowToolService(workspace, persistence), new SkillRegistry(join(process.cwd(), 'skills')),
+    new ContextManager(workspace, persistence, new MemoryManager(persistence)), new LifecycleEngine()
+  )
+  let cancelledEvent!: () => void
+  const terminal = new Promise<void>((resolve) => { cancelledEvent = resolve })
+  const sender = { isDestroyed: () => false, send: (_channel: string, event: ModelStreamEvent) => {
+    if (event.type === 'cancelled') cancelledEvent()
+  } } as unknown as WebContents
+
+  const started = await service.startChat(sender, {
+    workspaceId: created.workspace.id, requirementId: created.requirement.id, threadId: created.thread.id,
+    content: '请分析当前需求并指出需要确认的问题。'
+  })
+  await startedInRuntime
+  assert.equal(await service.cancelChat(started.run.id), true)
+  assert.equal(cancelledRunId, started.run.id)
+  assert.equal(persistence.getRun(started.run.id).status, 'Cancelling')
+  await assert.rejects(() => service.startChat(sender, {
+    workspaceId: created.workspace.id, requirementId: created.requirement.id, threadId: created.thread.id,
+    content: '立即开始下一轮。'
+  }), /当前已有 Agent Run/)
+
+  finishCancellation()
+  await terminal
+  assert.equal(persistence.getRun(started.run.id).status, 'Cancelled')
+})
+
 test('模型配置缺失时不创建首次 Run，也不影响 Requirement 与默认 Thread', async (t) => {
   const directory = await fs.mkdtemp(join(tmpdir(), 'espow-first-run-failure-'))
   t.after(() => fs.rm(directory, { recursive: true, force: true }))

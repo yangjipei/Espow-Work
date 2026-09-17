@@ -3,7 +3,7 @@ import test from 'node:test'
 import type { RuntimeContextPart } from './agentRuntime'
 import { applyContextBudget } from './contextBudget'
 
-const tools = [{ name: 'analysis_turn_submit', description: 'submit', parameters: { type: 'object' } }]
+const tools = [{ name: 'analysis_turn_submit', description: 'submit', parameters: { type: 'object' }, terminal: true }]
 
 test('Context Budget 在预算足够时保持原 Context', () => {
   const parts: RuntimeContextPart[] = [

@@ -41,7 +41,8 @@ export function toolSpecs(allowedTools: string[]): RuntimeToolSpec[] {
   return espowToolContracts.filter((tool) => allowed.has(tool.name)).map((tool) => ({
     name: tool.name,
     description: tool.description,
-    parameters: jsonSchema(tool.inputSchema)
+    parameters: jsonSchema(tool.inputSchema),
+    terminal: 'terminal' in tool && tool.terminal === true
   }))
 }
 
@@ -76,8 +77,8 @@ export class RuntimeService {
     }
   ): Promise<AsyncIterable<RuntimeEvent>> {
     await this.runtime.start()
-    const bridge = await this.toolBridge.start()
-    const release = this.toolBridge.activate(toolRun)
+    await this.toolBridge.start()
+    const bridge = this.toolBridge.activate(toolRun, allowedTools)
     this.activeRunId = identity.runId
     const stream = this.runtime.run({
       ...identity,
@@ -88,7 +89,7 @@ export class RuntimeService {
       systemPrompt: ESPOW_SYSTEM_PROMPT,
       model: config,
       tools: toolSpecs(allowedTools),
-      toolBridge: bridge,
+      toolBridge: bridge.config,
       maxSteps: options?.maxSteps ?? 12,
       maxModelCalls: options?.maxModelCalls ?? 1,
       maxInputTokens: options?.maxInputTokens ?? 24_000,
@@ -100,7 +101,7 @@ export class RuntimeService {
       try {
         yield* stream
       } finally {
-        release()
+        bridge.release()
         if (service.activeRunId === identity.runId) service.activeRunId = null
       }
     })()
@@ -130,9 +131,9 @@ export class RuntimeService {
     await this.runtime.stopUiLearning()
   }
 
-  async cancel(): Promise<boolean> {
-    if (!this.activeRunId) return false
-    return this.runtime.cancel(this.activeRunId)
+  async cancel(runId: string): Promise<boolean> {
+    if (this.activeRunId !== runId) return false
+    return this.runtime.cancel(runId)
   }
 
   getStatus(): RuntimeStatus {

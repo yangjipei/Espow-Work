@@ -46,3 +46,9 @@ test('Requirement Change Tool 向模型暴露完整结果约束', () => {
   assert.ok((resultJson.required as string[]).includes('validationResult'))
   assert.equal('fieldRequired' in resultJson, false)
 })
+
+test('Tool Registry 将 terminal 语义投影到 Runtime Tool Spec', () => {
+  const specs = toolSpecs(['analysis_turn_submit', 'artifact_read'])
+  assert.equal(specs.find((tool) => tool.name === 'analysis_turn_submit')?.terminal, true)
+  assert.equal(specs.find((tool) => tool.name === 'artifact_read')?.terminal, false)
+})

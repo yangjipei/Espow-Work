@@ -12,11 +12,13 @@ export interface RuntimeToolSpec {
   name: string
   description: string
   parameters: Record<string, unknown>
+  terminal: boolean
 }
 
 export interface RuntimeToolBridgeConfig {
   url: string
   token: string
+  runId: string
 }
 
 export interface RuntimeRunRequest {

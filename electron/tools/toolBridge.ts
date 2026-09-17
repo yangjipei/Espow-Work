@@ -3,9 +3,10 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import { espowToolContracts, type ToolCallRecord, type WriteApprovalRequest } from '../../src/tools'
 import { EspowToolError, EspowToolService, type ToolExecutionContext, type ToolName } from './toolService'
 import { RuntimeExecutor } from '../runtime/runtimeExecutor'
+import { reportDiagnostic } from '../diagnostics/diagnosticBridge'
 
 const maxRequestBytes = 6 * 1024 * 1024
-const toolNames = new Set(espowToolContracts.map((tool) => tool.name))
+const toolNames = new Set<string>(espowToolContracts.map((tool) => tool.name))
 
 export interface ToolBridgeEvent {
   call: ToolCallRecord
@@ -18,9 +19,21 @@ export interface ActiveToolRun extends ToolExecutionContext {
 }
 
 interface ToolRequest {
+  runId?: unknown
   callId?: unknown
   name?: unknown
   args?: unknown
+}
+
+interface ActiveToolBinding {
+  run: ActiveToolRun
+  token: string
+  allowedTools: ReadonlySet<string>
+}
+
+export interface ToolBridgeBinding {
+  config: { url: string; token: string; runId: string }
+  release: () => void
 }
 
 async function readBody(request: IncomingMessage): Promise<unknown> {
@@ -46,9 +59,8 @@ function send(response: ServerResponse, status: number, body: unknown): void {
 }
 
 export class EspowToolBridge {
-  private readonly token = randomBytes(32).toString('hex')
   private readonly server = createServer((request, response) => void this.handle(request, response))
-  private active: ActiveToolRun | null = null
+  private active: ActiveToolBinding | null = null
   private url: string | null = null
   private readonly executor: RuntimeExecutor
 
@@ -56,8 +68,8 @@ export class EspowToolBridge {
     this.executor = new RuntimeExecutor(tools)
   }
 
-  async start(): Promise<{ url: string; token: string }> {
-    if (this.url) return { url: this.url, token: this.token }
+  async start(): Promise<{ url: string }> {
+    if (this.url) return { url: this.url }
     await new Promise<void>((resolve, reject) => {
       const onError = (error: Error) => reject(error)
       this.server.once('error', onError)
@@ -69,14 +81,23 @@ export class EspowToolBridge {
     const address = this.server.address()
     if (!address || typeof address === 'string') throw new Error('ESPow Tool Bridge 无法获取监听地址。')
     this.url = `http://127.0.0.1:${address.port}/tool`
-    return { url: this.url, token: this.token }
+    return { url: this.url }
   }
 
-  activate(run: ActiveToolRun): () => void {
+  activate(run: ActiveToolRun, allowedTools: readonly string[]): ToolBridgeBinding {
     if (this.active) throw new Error('ESPow Tool Bridge 已绑定其他 Run。')
-    this.active = run
-    return () => {
-      if (this.active === run) this.active = null
+    if (!this.url) throw new Error('ESPow Tool Bridge 尚未启动。')
+    const binding: ActiveToolBinding = {
+      run,
+      token: randomBytes(32).toString('hex'),
+      allowedTools: new Set(allowedTools)
+    }
+    this.active = binding
+    return {
+      config: { url: this.url, token: binding.token, runId: run.runId },
+      release: () => {
+        if (this.active === binding) this.active = null
+      }
     }
   }
 
@@ -89,13 +110,23 @@ export class EspowToolBridge {
 
   private async handle(request: IncomingMessage, response: ServerResponse): Promise<void> {
     if (request.method !== 'POST' || request.url !== '/tool') return send(response, 404, { ok: false })
-    if (request.headers.authorization !== `Bearer ${this.token}`) return send(response, 403, { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Tool Bridge 身份校验失败。' } })
     const active = this.active
     if (!active) return send(response, 409, { ok: false, error: { code: 'NO_ACTIVE_RUN', message: '当前没有绑定的 Agent Run。' } })
+    if (request.headers.authorization !== `Bearer ${active.token}`) return send(response, 403, { ok: false, error: { code: 'PERMISSION_DENIED', message: 'Tool Bridge 身份校验失败。' } })
     let call: ToolCallRecord | null = null
     try {
       const body = await readBody(request) as ToolRequest
+      if (typeof body.runId !== 'string' || !body.runId) throw new EspowToolError('INVALID_INPUT', 'Tool 请求缺少 runId。')
+      if (body.runId !== active.run.runId) {
+        reportDiagnostic({
+          level: 'error', layer: 'tool', module: 'ToolBridge', operation: 'validateRun',
+          errorCode: 'TOOL_RUN_MISMATCH', errorMessage: `拒绝来自非活动 Run 的 Tool 请求：${body.runId}`,
+          workspaceId: active.run.workspaceId, runId: active.run.runId
+        })
+        return send(response, 409, { ok: false, error: { code: 'RUN_MISMATCH', message: 'Tool 请求不属于当前活动 Run。' } })
+      }
       if (typeof body.name !== 'string' || !toolNames.has(body.name)) throw new EspowToolError('INVALID_INPUT', '未知 ESPow Tool。')
+      if (!active.allowedTools.has(body.name)) throw new EspowToolError('PERMISSION_DENIED', 'Tool 不在当前 Run 的允许列表中。')
       call = {
         id: typeof body.callId === 'string' && body.callId ? body.callId : randomUUID(),
         name: body.name,
@@ -104,16 +135,16 @@ export class EspowToolBridge {
         completedAt: null,
         error: null
       }
-      active.onEvent({ call })
-      const output = await this.executor.execute(body.name as ToolName, body.args, active)
+      active.run.onEvent({ call })
+      const output = await this.executor.execute(body.name as ToolName, body.args, active.run)
       const completed: ToolCallRecord = { ...call, status: output.status === 'approval-required' ? 'WaitingConfirmation' : 'Completed', completedAt: new Date().toISOString() }
       const approval = output.approval && typeof output.approval === 'object' ? output.approval as unknown as WriteApprovalRequest : undefined
-      active.onEvent({ call: completed, output, approval })
+      active.run.onEvent({ call: completed, output, approval })
       send(response, 200, { ok: true, output })
     } catch (error) {
       const code = error instanceof EspowToolError ? error.code : 'TOOL_FAILED'
       const message = error instanceof Error ? error.message : 'ESPow Tool 执行失败。'
-      if (call) active.onEvent({ call: { ...call, status: 'Failed', completedAt: new Date().toISOString(), error: message } })
+      if (call) active.run.onEvent({ call: { ...call, status: 'Failed', completedAt: new Date().toISOString(), error: message } })
       send(response, 400, { ok: false, error: { code, message } })
     }
   }

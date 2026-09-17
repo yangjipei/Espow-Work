@@ -348,16 +348,13 @@ export class AgentTaskService {
     const sender = this.activeSender
     const cancelling = this.persistence.beginCancellation(runId)
     if (sender) this.emit(sender, { type: 'run_updated', runId, threadId: cancelling.threadId, run: cancelling })
-    let confirmed = false
-    try { confirmed = await this.runtime.cancel() } catch { confirmed = false }
-    const run = confirmed
-      ? this.persistence.completeCancellation(runId)
-      : this.persistence.interruptRun(runId, '取消请求未得到 Runtime 确认，本次 Run 已标记为 Interrupted。')
+    let accepted = false
+    try { accepted = await this.runtime.cancel(runId) } catch { accepted = false }
+    if (this.persistence.getRun(runId).status === 'Cancelled') return true
+    if (accepted) return true
+    const run = this.persistence.interruptRun(runId, '取消请求未得到 Runtime 接收，本次 Run 已标记为 Interrupted。')
     this.releaseActive(runId)
-    if (sender) {
-      if (run.status === 'Cancelled') this.emit(sender, { type: 'cancelled', runId, threadId: run.threadId, run })
-      else this.emit(sender, { type: 'error', runId, threadId: run.threadId, error: run.error ?? 'Run 已中断。', run })
-    }
+    if (sender) this.emit(sender, { type: 'error', runId, threadId: run.threadId, error: run.error ?? 'Run 已中断。', run })
     return true
   }
 
@@ -548,7 +545,9 @@ export class AgentTaskService {
           terminal = true
           const message = event.error ?? 'Agent Runtime 执行失败。'
           this.persistence.updateRunRuntimeEvents(started.run.id, events)
-          const failed = this.persistence.failRun(started.run.id, message)
+          const failed = this.persistence.getRun(started.run.id).status === 'Cancelling'
+            ? this.persistence.interruptRun(started.run.id, message)
+            : this.persistence.failRun(started.run.id, message)
           this.releaseActive(started.run.id)
           this.emit(sender, {
             type: 'error', runId: started.run.id, threadId: started.run.threadId, error: message, run: failed
@@ -562,6 +561,12 @@ export class AgentTaskService {
           }
         } else if (event.type === 'run_completed') {
           terminal = true
+          if (this.persistence.getRun(started.run.id).status === 'Cancelling') {
+            const cancelled = this.persistence.cancelRun(started.run.id)
+            this.releaseActive(started.run.id)
+            this.emit(sender, { type: 'cancelled', runId: started.run.id, threadId: started.run.threadId, run: cancelled })
+            continue
+          }
           if (!content.trim()) throw new Error('Agent Runtime 没有返回可显示的回复。')
           const current = this.persistence.getRun(started.run.id)
           if (current.skill === 'requirement-change' && !current.changeResult) {

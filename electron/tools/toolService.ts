@@ -3,7 +3,7 @@ import { constants } from 'node:fs'
 import { promises as fs } from 'node:fs'
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { createTwoFilesPatch } from 'diff'
-import type { ArtifactDiffResult, WriteApprovalRequest } from '../../src/tools'
+import type { ArtifactDiffResult, EspowToolName, WriteApprovalRequest } from '../../src/tools'
 import type {
   AnalysisActor, AnalysisScenario, AnalysisStatement, BusinessFlowModel, BusinessFlowResult, CandidateChange,
   ChangeArtifactAssessment, ChangeResult, DecisionImpact, InteractionDesignModel, InteractionDesignResult,
@@ -34,15 +34,7 @@ import { dependencyHash, parseRequirementReviewJson, renderRequirementReviewMark
 const maxArtifactBytes = 5 * 1024 * 1024
 const supportedExtensions = new Set(['.md', '.txt', '.html', '.htm', '.json'])
 
-export type ToolName = 'workspace_read' | 'artifact_find' | 'artifact_read' | 'change_result_submit' | 'artifact_next_version'
-  | 'analysis_turn_submit' | 'requirement_analysis_ready' | 'requirement_analysis_submit' | 'requirement_analysis_write'
-  | 'business_flow_next_version' | 'business_flow_ready' | 'business_flow_submit' | 'business_flow_write'
-  | 'solution_design_next_version' | 'solution_coverage_check' | 'solution_overdesign_check' | 'solution_design_submit' | 'solution_design_write'
-  | 'interaction_design_next_version' | 'interaction_design_ready' | 'interaction_design_submit' | 'interaction_design_write'
-  | 'prototype_ready' | 'prototype_submit' | 'prototype_write'
-  | 'product_spec_next_version' | 'product_spec_ready' | 'product_spec_submit' | 'product_spec_write'
-  | 'requirement_review_next_version' | 'requirement_review_ready' | 'requirement_review_submit' | 'requirement_review_status' | 'requirement_review_write'
-  | 'artifact_diff' | 'artifact_write' | 'workspace_validate'
+export type ToolName = EspowToolName
 
 export interface ToolExecutionContext {
   runId: string
