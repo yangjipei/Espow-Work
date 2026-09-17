@@ -1,0 +1,390 @@
+{
+  "version": 1,
+  "sourceRoots": [
+    "src",
+    "electron",
+    "electron/diagnostics",
+    "electron/runtime",
+    "electron/skills",
+    "electron/tools",
+    "espow-runtime/src",
+    "skills",
+    "scripts"
+  ],
+  "excluded": [
+    ".git/",
+    ".cache/",
+    ".test-dist/",
+    "node_modules/",
+    "target/",
+    "espow-runtime/target/",
+    "out/",
+    "dist/",
+    "release/",
+    "build/",
+    "coverage/",
+    "tmp/",
+    "temp/",
+    "logs/",
+    "downloads/",
+    "*.map",
+    "*.log",
+    "*.db",
+    "*.sqlite*",
+    "*.dmg",
+    "*.pkg",
+    "*.zip"
+  ],
+  "features": [
+    {
+      "id": "requirement-workspace",
+      "name": "需求工作区",
+      "aliases": ["需求工作区", "需求列表", "需求名称", "需求操作", "新增需求", "重命名需求", "删除需求"],
+      "defaultScope": "ui",
+      "scopes": {
+        "ui": {
+          "keywords": ["样式", "布局", "宽", "高度", "颜色", "间距", "文案", "展示"],
+          "primary": ["src/App.tsx", "src/styles.css"],
+          "related": [],
+          "tests": []
+        },
+        "interaction": {
+          "keywords": ["菜单", "按钮", "点击", "展开", "收起", "弹窗", "交互"],
+          "primary": ["src/App.tsx", "src/styles.css"],
+          "related": ["src/store.ts"],
+          "tests": []
+        },
+        "data": {
+          "keywords": ["创建", "新增", "重命名", "删除", "保存", "持久化"],
+          "primary": ["src/store.ts", "src/workspace.ts", "electron/requirementService.ts"],
+          "related": ["electron/preload.ts", "electron/main.ts", "electron/workspaceService.ts", "electron/persistenceService.ts"],
+          "tests": ["electron/workspaceService.test.ts", "electron/persistenceService.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "requirement-lifecycle",
+      "name": "需求生命周期",
+      "aliases": ["需求生命周期", "生命周期", "阶段展示", "阶段状态", "生命周期阶段"],
+      "defaultScope": "ui",
+      "scopes": {
+        "ui": {
+          "keywords": ["样式", "布局", "展示", "文案", "进度条", "步骤条"],
+          "primary": ["src/App.tsx", "src/styles.css"],
+          "related": ["src/workspace.ts", "src/lifecycleStageState.ts"],
+          "tests": []
+        },
+        "lifecycle": {
+          "keywords": ["状态流转", "推进", "回退", "失效", "重检", "确认规则", "生命周期规则"],
+          "primary": ["electron/runtime/lifecycleEngine.ts", "electron/runtime/lifecycleStageStateEngine.ts", "src/lifecycleStageState.ts"],
+          "related": ["src/workspace.ts", "electron/persistenceService.ts"],
+          "tests": ["electron/runtime/lifecycleEngine.test.ts", "electron/runtime/lifecycleStageStateEngine.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "conversation",
+      "name": "对话与 Thread",
+      "aliases": ["对话", "会话", "Thread", "消息列表", "聊天", "新建对话", "删除对话", "重命名对话", "补充需求", "开始分析需求", "发送信息报错", "analysis_turn_submit", "工具参数报错", "agent input token estimate", "输入预算溢出"],
+      "defaultScope": "ui",
+      "scopes": {
+        "ui": {
+          "keywords": ["样式", "布局", "展示", "输入框", "消息气泡", "文案"],
+          "primary": ["src/App.tsx", "src/styles.css"],
+          "related": ["src/store.ts"],
+          "tests": []
+        },
+        "interaction": {
+          "keywords": ["发送", "停止", "打开", "切换", "按钮", "菜单", "补充", "开始分析", "Token"],
+          "primary": ["src/App.tsx", "src/store.ts"],
+          "related": ["src/persistence.ts", "src/model.ts"],
+          "tests": []
+        },
+        "data": {
+          "keywords": ["创建", "重命名", "删除", "消息记录", "保存", "持久化"],
+          "primary": ["src/store.ts", "src/persistence.ts", "electron/persistenceService.ts"],
+          "related": ["electron/preload.ts", "electron/main.ts"],
+          "tests": ["electron/persistenceService.test.ts"]
+        },
+        "runtime": {
+          "keywords": ["模型回复", "流式", "运行", "执行", "Agent", "工具调用", "参数", "JSON", "input token", "预算", "超限"],
+          "primary": ["espow-runtime/src/agent/mod.rs", "electron/agentTaskService.ts", "electron/runtime/agentRuntime.ts", "src/model.ts"],
+          "related": ["espow-runtime/src/model/mod.rs", "electron/modelService.ts", "electron/preload.ts", "electron/main.ts"],
+          "tests": ["electron/agentTaskService.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "artifact",
+      "name": "产物",
+      "aliases": ["产物", "Artifact", "产物列表", "产物预览", "参考资料", "附件"],
+      "defaultScope": "ui",
+      "scopes": {
+        "ui": {
+          "keywords": ["样式", "布局", "展示", "预览", "卡片", "列表", "文案"],
+          "primary": ["src/App.tsx", "src/styles.css"],
+          "related": ["src/workspace.ts", "src/store.ts"],
+          "tests": []
+        },
+        "data": {
+          "keywords": ["读取", "扫描", "路径", "文件", "保存", "参考资料"],
+          "primary": ["src/workspace.ts", "electron/workspaceService.ts"],
+          "related": ["src/store.ts", "electron/preload.ts", "electron/main.ts"],
+          "tests": ["electron/workspaceService.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "token-usage",
+      "name": "Token 消耗",
+      "aliases": ["Token 消耗", "Token消耗", "Token 使用", "Token使用", "Token 统计", "Token用量"],
+      "defaultScope": "ui",
+      "scopes": {
+        "ui": {
+          "keywords": ["页面", "表格", "样式", "布局", "宽", "高度", "颜色", "展示", "图表"],
+          "primary": ["src/App.tsx", "src/styles.css"],
+          "related": ["src/tokenUsage.ts"],
+          "tests": []
+        },
+        "data": {
+          "keywords": ["统计", "记录", "汇总", "查询", "持久化", "计算"],
+          "primary": ["src/tokenUsage.ts", "electron/persistenceService.ts"],
+          "related": ["electron/preload.ts", "electron/main.ts", "electron/agentTaskService.ts"],
+          "tests": ["electron/persistenceService.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "model-settings",
+      "name": "模型设置",
+      "aliases": ["模型设置", "模型配置", "模型供应商", "OpenAI 配置", "DeepSeek 配置", "API Key"],
+      "defaultScope": "ui",
+      "scopes": {
+        "ui": {
+          "keywords": ["页面", "表单", "样式", "布局", "文案", "输入框", "按钮"],
+          "primary": ["src/App.tsx", "src/styles.css"],
+          "related": ["src/model.ts"],
+          "tests": []
+        },
+        "data": {
+          "keywords": ["保存", "读取", "配置", "持久化", "密钥"],
+          "primary": ["src/model.ts", "electron/persistenceService.ts"],
+          "related": ["electron/preload.ts", "electron/main.ts"],
+          "tests": ["electron/persistenceService.test.ts"]
+        },
+        "runtime": {
+          "keywords": ["连接测试", "供应商", "请求", "调用模型", "Base URL"],
+          "primary": ["electron/modelService.ts", "electron/modelProvider.ts", "src/model.ts"],
+          "related": ["electron/main.ts", "electron/preload.ts"],
+          "tests": ["electron/modelProvider.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "workspace",
+      "name": "本地 Workspace",
+      "aliases": ["本地 Workspace", "Workspace", "工作区", "选择工作区", "切换工作区", "Workspace 路径", "工作区目录"],
+      "defaultScope": "ui",
+      "scopes": {
+        "ui": {
+          "keywords": ["页面", "样式", "布局", "按钮", "路径展示", "文案"],
+          "primary": ["src/App.tsx", "src/styles.css"],
+          "related": ["src/store.ts", "src/workspace.ts"],
+          "tests": []
+        },
+        "interaction": {
+          "keywords": ["选择", "切换", "刷新", "打开目录"],
+          "primary": ["src/store.ts", "src/workspace.ts"],
+          "related": ["electron/preload.ts", "electron/main.ts", "electron/workspaceService.ts"],
+          "tests": ["electron/workspaceService.test.ts"]
+        },
+        "data": {
+          "keywords": ["扫描", "读取", "目录", "缓存", "最近工作区", "持久化"],
+          "primary": ["electron/workspaceService.ts", "src/workspace.ts"],
+          "related": ["electron/persistenceService.ts", "electron/preload.ts", "electron/main.ts"],
+          "tests": ["electron/workspaceService.test.ts", "electron/persistenceService.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "runtime-orchestration",
+      "name": "Agent 运行时编排",
+      "aliases": ["运行时编排", "Agent 路由", "意图识别", "确定性执行", "LLM Gate", "脚本优先", "槽位更新", "Runtime"],
+      "defaultScope": "routing",
+      "scopes": {
+        "routing": {
+          "keywords": ["路由", "意图", "分流", "槽位", "消息", "请求"],
+          "primary": ["electron/agentTaskService.ts", "electron/runtime/turnRouter.ts", "electron/runtime/intentRecognition.ts"],
+          "related": ["electron/runtime/explicitSlotRouter.ts", "electron/runtime/slotRouter.ts", "electron/runtime/deterministicMessageRouter.ts", "electron/runtime/toolResolver.ts"],
+          "tests": ["electron/agentTaskService.test.ts", "electron/runtime/turnRouter.test.ts", "electron/runtime/intentRecognition.test.ts", "electron/runtime/explicitSlotRouter.test.ts", "electron/runtime/deterministicMessageRouter.test.ts", "electron/runtime/toolResolver.test.ts"]
+        },
+        "policy": {
+          "keywords": ["策略", "确定性", "模型", "执行计划", "预算"],
+          "primary": ["electron/runtime/executionPolicy.ts", "electron/runtime/runtimeExecutor.ts"],
+          "related": ["electron/modelService.ts", "electron/runtime/agentRuntime.ts", "electron/runtime/runtimeService.ts"],
+          "tests": ["electron/runtime/executionPolicy.test.ts", "electron/runtime/runtimeExecutor.test.ts", "electron/runtime/runtimeService.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "context-memory",
+      "name": "Context 与记忆",
+      "aliases": ["上下文管理", "Context", "Analysis Mainline", "Working Context", "记忆", "上下文预算", "Token 预算"],
+      "defaultScope": "context",
+      "scopes": {
+        "context": {
+          "keywords": ["上下文", "主线", "快照", "预算", "历史", "压缩"],
+          "primary": ["electron/runtime/contextManager.ts", "electron/runtime/analysisStateEngine.ts", "src/context.ts", "src/analysisState.ts"],
+          "related": ["electron/runtime/tokenEstimator.ts", "src/runtime.ts", "src/store.ts"],
+          "tests": ["electron/runtime/contextManager.test.ts", "electron/runtime/analysisStateEngine.test.ts"]
+        },
+        "memory": {
+          "keywords": ["记忆", "检索", "长期", "相关"],
+          "primary": ["electron/runtime/memoryManager.ts", "src/memory.ts"],
+          "related": ["electron/persistenceService.ts", "electron/runtime/workContextResolver.ts"],
+          "tests": ["electron/runtime/memoryManager.test.ts"]
+        },
+        "work-context": {
+          "keywords": ["公司", "系统关系", "上下游", "主系统", "背景"],
+          "primary": ["electron/runtime/workContextResolver.ts", "src/workContext.ts"],
+          "related": ["electron/persistenceService.ts", "src/store.ts"],
+          "tests": ["electron/runtime/workContextResolver.test.ts", "electron/persistenceService.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "lifecycle-stage-state",
+      "name": "生命周期阶段状态",
+      "aliases": ["Stage State", "阶段状态", "阶段就绪度", "阶段确认", "下游失效", "重新检查"],
+      "defaultScope": "lifecycle",
+      "scopes": {
+        "lifecycle": {
+          "keywords": ["生命周期", "阶段", "推进", "回退", "失效", "重检"],
+          "primary": ["electron/runtime/lifecycleEngine.ts", "electron/runtime/lifecycleStageStateEngine.ts", "src/lifecycleStageState.ts"],
+          "related": ["src/workspace.ts", "electron/persistenceService.ts"],
+          "tests": ["electron/runtime/lifecycleEngine.test.ts", "electron/runtime/lifecycleStageStateEngine.test.ts", "electron/workspaceService.test.ts"]
+        },
+        "readiness": {
+          "keywords": ["就绪", "前置条件", "退出条件", "确认"],
+          "primary": ["electron/runtime/analysisStateEngine.ts", "electron/runtime/lifecycleStageStateEngine.ts"],
+          "related": ["electron/runtime/lifecycleEngine.ts", "src/analysisState.ts"],
+          "tests": ["electron/runtime/analysisStateEngine.test.ts", "electron/runtime/lifecycleStageStateEngine.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "skill-contracts",
+      "name": "Skill 合约与选择",
+      "aliases": ["技能", "Skill", "技能选择", "技能合约", "技能胶囊", "阶段技能"],
+      "defaultScope": "selection",
+      "scopes": {
+        "selection": {
+          "keywords": ["选择", "匹配", "阶段", "模式"],
+          "primary": ["electron/skills/skillRegistry.ts", "src/skills.ts"],
+          "related": ["electron/agentTaskService.ts", "electron/runtime/turnRouter.ts"],
+          "tests": ["electron/skills/skillRegistry.test.ts"]
+        },
+        "contracts": {
+          "keywords": ["合约", "manifest", "允许工具", "说明"],
+          "primary": ["skills/requirement-analysis/skill.yaml", "skills/requirement-analysis/SKILL.md", "skills/requirement-change/skill.yaml", "skills/business-flow/skill.yaml", "skills/solution-design/skill.yaml", "skills/interaction-design/skill.yaml", "skills/prototype/skill.yaml", "skills/product-spec/skill.yaml", "skills/requirement-review/skill.yaml"],
+          "related": ["electron/skills/skillRegistry.ts", "src/skills.ts"],
+          "tests": ["electron/skills/skillRegistry.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "tool-artifact-pipeline",
+      "name": "工具与产物流水线",
+      "aliases": ["工具调用", "Artifact 写入", "版本产物", "Diff", "写入审批", "Workspace 校验", "工具边界"],
+      "defaultScope": "tool",
+      "scopes": {
+        "tool": {
+          "keywords": ["工具", "调用", "解析", "桥接", "允许"],
+          "primary": ["electron/tools/toolService.ts", "electron/tools/toolBridge.ts", "src/tools.ts"],
+          "related": ["electron/runtime/toolResolver.ts", "electron/agentTaskService.ts"],
+          "tests": ["electron/tools/toolService.test.ts", "electron/tools/interactionToolService.test.ts", "electron/tools/prototypeToolService.test.ts"]
+        },
+        "artifact": {
+          "keywords": ["产物", "版本", "差异", "审批", "校验", "写入"],
+          "primary": ["electron/tools/toolService.ts", "electron/tools/toolAcceptance.ts"],
+          "related": ["electron/workspaceService.ts", "electron/persistenceService.ts", "src/workspace.ts"],
+          "tests": ["electron/tools/toolAcceptance.ts", "electron/tools/toolService.test.ts", "electron/workspaceService.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "stage-artifact-generation",
+      "name": "阶段产物生成",
+      "aliases": ["阶段产物生成", "产物生成", "业务流程", "方案设计", "交互设计", "页面原型", "PRD", "需求评审", "需求分析产物"],
+      "defaultScope": "generation",
+      "scopes": {
+        "generation": {
+          "keywords": ["生成", "分析", "流程", "方案", "交互", "原型", "PRD", "评审"],
+          "primary": ["electron/tools/businessFlow.ts", "electron/tools/solutionDesign.ts", "electron/tools/interactionDesign.ts", "electron/tools/prototype.ts", "electron/tools/productSpec.ts", "electron/tools/requirementReview.ts"],
+          "related": ["electron/tools/toolService.ts", "src/skills.ts", "src/lifecycleStageState.ts"],
+          "tests": ["electron/tools/businessFlow.test.ts", "electron/tools/solutionDesign.test.ts", "electron/tools/interactionDesign.test.ts", "electron/tools/prototype.test.ts", "electron/tools/productSpec.test.ts", "electron/tools/requirementReview.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "model-runtime-bridge",
+      "name": "模型与 Rust Runtime 桥接",
+      "aliases": ["模型调用", "模型供应商", "OpenAI 兼容", "DeepSeek", "Rust Runtime", "RPC", "运行取消", "流式输出"],
+      "defaultScope": "provider",
+      "scopes": {
+        "provider": {
+          "keywords": ["供应商", "模型", "OpenAI", "DeepSeek", "Base URL", "API Key"],
+          "primary": ["electron/modelProvider.ts", "electron/modelService.ts", "src/model.ts"],
+          "related": ["electron/persistenceService.ts", "electron/main.ts", "electron/preload.ts"],
+          "tests": ["electron/modelProvider.test.ts"]
+        },
+        "runtime": {
+          "keywords": ["Runtime", "RPC", "协议", "取消", "流式", "传输"],
+          "primary": ["electron/runtime/runtimeService.ts", "electron/runtime/runtimeExecutor.ts", "espow-runtime/src/main.rs", "espow-runtime/src/agent/mod.rs"],
+          "related": ["espow-runtime/src/protocol/mod.rs", "espow-runtime/src/model/mod.rs", "espow-runtime/src/transport/mod.rs", "electron/runtime/espowRuntime.ts"],
+          "tests": ["electron/runtime/runtimeService.test.ts", "electron/runtime/runtimeExecutor.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "diagnostics-observability",
+      "name": "诊断与运行可观测性",
+      "aliases": ["诊断", "错误上报", "日志", "Breadcrumb", "诊断包", "远程报告", "运行可观测性"],
+      "defaultScope": "diagnostics",
+      "scopes": {
+        "diagnostics": {
+          "keywords": ["诊断", "错误", "脱敏", "上报", "崩溃"],
+          "primary": ["electron/diagnostics/diagnosticService.ts", "electron/diagnostics/diagnosticBridge.ts", "src/diagnostic.ts"],
+          "related": ["electron/diagnostics/errorNormalizer.ts", "electron/diagnostics/sanitizer.ts", "electron/diagnostics/remoteReporter.ts", "electron/diagnostics/schema.ts", "electron/diagnostics/zip.ts"],
+          "tests": ["electron/diagnostics.test.ts"]
+        },
+        "observability": {
+          "keywords": ["事件", "追踪", "运行记录", "Token", "审计"],
+          "primary": ["electron/persistenceService.ts", "electron/agentTaskService.ts", "src/persistence.ts"],
+          "related": ["src/tokenUsage.ts", "electron/runtime/runtimeService.ts"],
+          "tests": ["electron/persistenceService.test.ts"]
+        }
+      }
+    },
+    {
+      "id": "project-architecture",
+      "name": "项目架构与上下文索引",
+      "aliases": ["分析整个项目", "项目分析", "代码分析", "架构分析", "项目结构", "Feature Map", "特征索引", "上下文索引"],
+      "defaultScope": "architecture",
+      "scopes": {
+        "architecture": {
+          "keywords": ["项目", "架构", "结构", "模块", "全局", "分析"],
+          "primary": ["README.md", "AGENTS.md", "package.json", "src/App.tsx", "electron/main.ts", "electron/agentTaskService.ts", "espow-runtime/src/main.rs"],
+          "related": ["src/store.ts", "electron/persistenceService.ts", "electron/runtime/runtimeService.ts", "electron/tools/toolService.ts", "electron/skills/skillRegistry.ts"],
+          "tests": ["electron/agentTaskService.test.ts", "electron/runtime/runtimeService.test.ts", "electron/tools/toolService.test.ts", "electron/skills/skillRegistry.test.ts"]
+        },
+        "index": {
+          "keywords": ["Feature Map", "索引", "路径", "上下文"],
+          "primary": [".agent/feature-map.json", "scripts/feature-context.mjs"],
+          "related": ["AGENTS.md", "package.json"],
+          "tests": []
+        }
+      }
+    }
+  ]
+}

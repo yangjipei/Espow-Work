@@ -1,0 +1,43 @@
+id: interaction-design
+name: 交互设计
+description: 把已确认的产品方案转化为可追踪、可验证、可供 Prototype 消费的页面与交互结构
+version: 0.2.0
+mode:
+  - interaction
+inputs:
+  - shared_requirement_state
+  - stage_working_state
+  - upstream_stage_summaries
+  - user_request
+  - confirmed_requirement_analysis
+  - confirmed_business_flow
+  - confirmed_solution_design
+  - requirement_snapshot
+  - relevant_decisions
+  - relevant_open_issues
+  - existing_interaction_design
+  - existing_ui_references
+outputs:
+  - product_surfaces
+  - pages
+  - components
+  - actions
+  - states
+  - transitions
+  - feedback
+  - interaction_rules
+  - user_paths
+  - decisions
+  - open_questions
+  - solution_conflicts
+  - flow_conflicts
+  - interaction_status
+allowed_tools:
+  - workspace_read
+  - artifact_find
+  - artifact_read
+  - interaction_design_next_version
+  - interaction_design_ready
+  - interaction_design_submit
+  - interaction_design_write
+  - workspace_validate

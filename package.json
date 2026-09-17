@@ -1,0 +1,39 @@
+{
+  "name": "espow-work",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ESPow Work Mac Desktop prototype",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "context": "node scripts/feature-context.mjs",
+    "dev": "npm run runtime:build && electron-vite dev",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run test:unit && npm run runtime:test",
+    "test:unit": "tsc -p tsconfig.test.json --outDir .test-dist && NODE_PATH=./node_modules node --test .test-dist/electron/*.test.js .test-dist/electron/runtime/*.test.js .test-dist/electron/skills/*.test.js .test-dist/electron/tools/*.test.js",
+    "test:acceptance": "tsc -p tsconfig.test.json --outDir .test-dist && NODE_PATH=./node_modules node .test-dist/electron/tools/toolAcceptance.js",
+    "build": "npm run runtime:build && npm run typecheck && electron-vite build",
+    "runtime:build": "cargo build --manifest-path espow-runtime/Cargo.toml",
+    "runtime:test": "cargo test --manifest-path espow-runtime/Cargo.toml",
+    "validate:ui-baseline": "node scripts/validate-ui-baseline-architecture.mjs"
+  },
+  "dependencies": {
+    "diff": "^9.0.0",
+    "lucide-react": "^0.544.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "yaml": "^2.9.1",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.0",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.2",
+    "electron": "^38.1.0",
+    "electron-vite": "^5.0.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5"
+  }
+}

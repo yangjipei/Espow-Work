@@ -1,0 +1,70 @@
+plan_version: 4.0
+mode: flow-grounded
+template: 06_Templates/PRD骨架.md
+supplement_template: 06_Templates/PRD补充信息骨架.md
+ui_surfaces:
+  web: false
+  app: true
+  items:
+    - id: APP_CASE_LIST
+      platform: app
+      name: App 案件列表
+      page_mode: crud
+      prototype_slug: app-case-list
+prd_sections:
+  web:
+    enabled: true
+    mode: system_rules_no_ui
+  app:
+    enabled: true
+    mode: ui
+solution_modules:
+  - system-overview
+  - decision-plan
+  - dispatch-idempotency
+  - round-execution
+  - callback-status
+section_map:
+  section_6_2:
+    - system-overview
+  section_6_3:
+    - decision-plan
+    - dispatch-idempotency
+    - round-execution
+    - callback-status
+  section_6_4:
+    - APP_CASE_LIST
+  section_7:
+    - exception-scenarios
+  section_8:
+    - metrics
+  section_9:
+    - acceptance
+  section_10:
+    - risks
+  section_11:
+    - unresolved
+module_titles:
+  decision-plan: Decision Plan 解析与执行快照
+  round-execution: 轮次执行、超时与 WAT 日切
+  dispatch-idempotency: 工具路由、任务投递与幂等
+  callback-status: 服务商回调、状态覆盖与迟到结果
+  exception-exit: 异常记录与案件退出
+  interface-design: 字段、接口与状态映射
+  system-overview: 系统总体流程
+read_map:
+  grounding: prd/prd-grounding.yaml
+  background: 00-snapshot.md
+  prototype: prototype/prototype-contract.yaml
+solution_fact_policy:
+  section_6_2:
+    - BF
+    - DEC
+  section_6_3:
+    - BF
+    - DEC
+  section_6_4:
+    - PF
+    - PROTO
+    - DEC
+  snapshot_can_create_solution_fact: false

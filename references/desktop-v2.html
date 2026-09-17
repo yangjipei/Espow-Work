@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ESPow Work｜Product Manager Agent Desktop V2</title>
+<style>
+:root{
+  --bg:#f3f6fa;--panel:#fff;--soft:#f8fafc;--text:#172033;--muted:#738096;
+  --line:#e1e8f0;--line2:#d4deea;--blue:#2f6fed;--blue2:#edf4ff;--blue3:#dfeaff;
+  --green:#198a62;--green2:#eaf8f2;--orange:#c87b18;--orange2:#fff4e7;
+  --purple:#7358d4;--purple2:#f1edff;--red:#c84a42;--red2:#fff0ef;
+  --shadow:0 18px 50px rgba(25,39,67,.09)
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;overflow:hidden;color:var(--text);
+  background:radial-gradient(circle at 10% -10%,rgba(47,111,237,.09),transparent 26%),var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{height:100vh;display:grid;grid-template-rows:42px 1fr;padding:12px;gap:10px}
+.windowbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 8px}
+.mac{display:flex;gap:8px}.dot{width:12px;height:12px;border-radius:50%}.dot:nth-child(1){background:#ff5f57}.dot:nth-child(2){background:#febc2e}.dot:nth-child(3){background:#28c840}
+.windowtitle{font-size:12px;font-weight:800;color:#58667b}
+.windowright{justify-self:end;display:flex;align-items:center;gap:8px}
+.pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;font-size:11px;color:#66758a}
+.statusdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#20a36d;margin-right:5px}
+.avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#23395f,#466dba);color:#fff;font-size:11px;font-weight:800}
+.workspace{
+  min-height:0;display:grid;grid-template-columns:286px minmax(590px,1fr) 330px;
+  background:var(--panel);border:1px solid #dce5ef;border-radius:18px;overflow:hidden;box-shadow:var(--shadow)
+}
+
+/* LEFT */
+.left{min-width:0;background:#f8fafc;border-right:1px solid var(--line);display:flex;flex-direction:column}
+.brand{padding:17px 15px 13px;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px}
+.mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#1e3154,#3670cf);color:#fff;display:grid;place-items:center;font-weight:900}
+.logo-title{font-size:14px;font-weight:900}.logo-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.primary-row{display:grid;grid-template-columns:1fr 40px;gap:7px;margin-top:13px}
+.primary{
+  border:0;background:var(--text);color:#fff;padding:10px 12px;border-radius:10px;font-size:11px;font-weight:800
+}
+.plus{border:1px solid #dbe3ec;background:#fff;border-radius:10px;font-size:17px;color:#536176}
+.nav{padding:10px}
+.nav-title{padding:8px 10px 5px;font-size:9px;color:#99a4b5;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.nav-item{display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:9px;font-size:11px;color:#566378;margin:2px 0}
+.nav-item:hover{background:#eef3f8}.nav-item.active{background:var(--blue2);color:#2458ad;font-weight:800}
+.nav-icon{width:18px;text-align:center}
+.workspace-list{padding:0 8px 10px;overflow:auto;min-height:0}
+.ws{
+  margin-bottom:6px;border:1px solid transparent;border-radius:11px;overflow:hidden
+}
+.ws.open{background:#fff;border-color:#dde6f0;box-shadow:0 5px 16px rgba(29,44,70,.04)}
+.ws-head{
+  display:flex;align-items:flex-start;gap:7px;padding:10px;cursor:pointer
+}
+.ws-head:hover{background:#f2f6fb}
+.chev{width:16px;color:#8793a5;transition:.18s;flex:0 0 auto}
+.ws.open .chev{transform:rotate(90deg)}
+.ws-main{min-width:0;flex:1}
+.ws-name{font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ws-meta{display:flex;justify-content:space-between;gap:6px;margin-top:4px;font-size:8px;color:#919bad}
+.ws-body{display:none;padding:0 8px 8px 30px}
+.ws.open .ws-body{display:block}
+.thread{
+  position:relative;padding:7px 8px;border-radius:8px;margin:2px 0;font-size:9px;color:#657286;cursor:pointer;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.thread:hover{background:#f2f6fb}
+.thread.active{background:#edf4ff;color:#2859a5;font-weight:800}
+.thread:before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:#bdc7d4;margin-right:7px;vertical-align:1px}
+.thread.active:before{background:var(--blue)}
+.new-thread{
+  width:100%;border:1px dashed #cfd9e6;background:#fafcff;color:#66758a;border-radius:8px;
+  padding:7px 8px;text-align:left;font-size:9px;margin-top:5px
+}
+.left-footer{margin-top:auto;border-top:1px solid var(--line);padding:11px 13px;display:flex;justify-content:space-between;font-size:9px;color:#718096}
+
+/* CENTER */
+.center{min-width:0;display:grid;grid-template-rows:auto auto auto 1fr auto}
+.head{padding:16px 20px 13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px}
+.crumb{font-size:9px;color:#8f99a9;margin-bottom:5px}
+.projectline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.project-title{font-size:16px;font-weight:900}
+.stage{font-size:9px;padding:4px 7px;border-radius:999px;background:var(--purple2);color:#664ab6;font-weight:800}
+.thread-badge{font-size:9px;padding:4px 7px;border-radius:999px;background:#f1f5f9;color:#657286}
+.head-sub{font-size:10px;color:var(--muted);margin-top:5px}
+.head-actions{display:flex;gap:7px}
+.icon-btn{border:1px solid var(--line);background:#fff;width:31px;height:31px;border-radius:9px;color:#657286}
+.icon-btn:hover{background:#f8fafc}
+.lifecycle{
+  padding:10px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;overflow:auto;background:#fbfcfe
+}
+.life{display:flex;align-items:center;gap:5px;flex:0 0 auto}
+.life-node{
+  padding:6px 8px;border:1px solid #e0e7ef;background:#fff;border-radius:8px;font-size:8px;color:#6c788b
+}
+.life-node.done{background:var(--green2);border-color:#cce8dc;color:#187653}
+.life-node.current{background:var(--blue2);border-color:#c9dbfb;color:#285cae;font-weight:800}
+.life-arrow{color:#a4afbe;font-size:10px}
+.capabilities{
+  padding:10px 14px;border-bottom:1px solid var(--line);display:flex;gap:7px;overflow-x:auto
+}
+.cap{
+  flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid #dfe6ef;background:#fff;border-radius:10px
+}
+.cap:hover{border-color:#bfd2f1;background:#f9fbff}.cap.active{background:var(--blue2);border-color:#bfd2f1}
+.cap-icon{width:24px;height:24px;border-radius:7px;background:#f3f6fa;display:grid;place-items:center;font-size:12px}
+.cap b{font-size:9px;display:block}.cap small{font-size:7px;color:var(--muted);display:block;margin-top:2px}
+.chat{min-height:0;overflow:auto;padding:20px 26px 24px}
+.snapshot{max-width:780px;margin:0 auto 18px;border:1px solid #dfe7f2;border-radius:14px;padding:13px;background:linear-gradient(135deg,#fbfdff,#f7faff)}
+.snap-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.snap-head b{font-size:10px}.snap-head span{font-size:8px;color:#8793a5}
+.snap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.metric{background:#fff;border:1px solid #e5eaf1;border-radius:9px;padding:9px}.metric span{font-size:7px;color:#909aaa;display:block}.metric b{font-size:10px;display:block;margin-top:4px}
+.timeline{max-width:780px;margin:0 auto}
+.msg{display:flex;gap:9px;margin:14px 0}.msg.user{justify-content:flex-end}.mini{width:26px;height:26px;border-radius:8px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:9px;font-weight:900;flex:0 0 auto}
+.bubble{max-width:80%;border:1px solid #e1e7ef;background:#f8fafc;border-radius:13px;padding:11px 13px;font-size:10px;line-height:1.7}
+.msg.user .bubble{background:#172033;color:#fff;border-color:#172033}
+.plan{margin-top:9px;background:#fff;border:1px solid #dce6f4;border-radius:11px;overflow:hidden;color:var(--text)}
+.plan-head{display:flex;justify-content:space-between;padding:8px 10px;border-bottom:1px solid #edf1f6;font-size:9px;font-weight:800}
+.plan-body{padding:7px}
+.step{display:flex;align-items:center;gap:7px;padding:6px 3px;font-size:9px;color:#657286}.sn{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#edf2f7;font-size:8px;font-weight:800}.step.done .sn{background:var(--green2);color:var(--green)}.step.current .sn{background:var(--blue2);color:var(--blue)}.step.current{color:#2758a1;font-weight:800}
+.compose-wrap{border-top:1px solid var(--line);padding:11px 16px 12px;background:#fff}
+.compose{border:1px solid #d8e1ec;border-radius:13px;padding:9px 9px 7px;box-shadow:0 4px 16px rgba(30,49,76,.04)}
+textarea{width:100%;border:0;outline:0;resize:none;min-height:40px;max-height:110px;font-size:10px;background:transparent;color:var(--text)}
+.compose-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.tools{display:flex;gap:5px;flex-wrap:wrap}.tool{border:0;background:#f3f6fa;color:#657286;border-radius:7px;padding:5px 7px;font-size:8px}.send{border:0;background:var(--blue);color:#fff;border-radius:8px;padding:6px 11px;font-size:9px;font-weight:800}
+.hint{text-align:center;font-size:7px;color:#98a2b1;margin-top:6px}
+
+/* RIGHT */
+.right{min-width:0;background:#fbfcfe;border-left:1px solid var(--line);display:grid;grid-template-rows:auto auto 1fr;overflow:hidden}
+.context{padding:14px;border-bottom:1px solid var(--line)}
+.section-title{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:900;margin-bottom:9px}
+.section-title span{font-size:8px;color:#8e98a8;font-weight:600}
+.context-card{background:#fff;border:1px solid #e0e7ef;border-radius:11px;padding:10px}
+.row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed #edf1f5;font-size:8px}.row:last-child{border-bottom:0}.row span{color:#8c96a6}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line);background:#fff}
+.tab{border:0;background:#fff;padding:10px 5px;font-size:8px;color:#7a8799;border-bottom:2px solid transparent}
+.tab.active{color:#285baa;border-bottom-color:var(--blue);font-weight:800;background:#fbfdff}
+.tab-content{display:none;padding:13px;overflow:auto}.tab-content.active{display:block}
+.cardlist{display:grid;gap:7px}.side-card{background:#fff;border:1px solid #e1e8f0;border-radius:9px;padding:9px;cursor:pointer}.side-card:hover{border-color:#bfd0e8}.topline{display:flex;justify-content:space-between;gap:8px}.side-card b{font-size:9px}.ver{font-size:7px;padding:2px 5px;border-radius:999px;background:#f1f5f9;color:#758196}.meta{font-size:7px;color:#909aa9;margin-top:4px;line-height:1.5}.issue{border-left:3px solid #e3a047}.decision{border-left:3px solid #4ca77a}
+.quick{padding:13px;border-top:1px solid var(--line)}.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.quick button{border:1px solid #dfe6ef;background:#fff;border-radius:8px;padding:7px;font-size:8px;color:#59667a}
+
+/* MODALS */
+.modal-mask{position:fixed;inset:0;background:rgba(23,32,51,.34);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
+.modal-mask.show{display:flex}.modal{width:min(500px,90vw);background:#fff;border-radius:16px;box-shadow:0 28px 80px rgba(23,32,51,.2);border:1px solid #dce4ee;overflow:hidden}
+.modal-head{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modal-head b{font-size:12px}.x{border:0;background:#f4f6f9;width:27px;height:27px;border-radius:8px}
+.modal-body{padding:16px}.field{margin-bottom:12px}.field label{display:block;font-size:9px;font-weight:800;margin-bottom:6px;color:#647084}.field input,.field textarea{width:100%;border:1px solid #dbe3ec;border-radius:9px;padding:9px 10px;font-size:10px;outline:0}.field input:focus,.field textarea:focus{border-color:#a9c3ed;box-shadow:0 0 0 3px rgba(47,111,237,.08)}
+.modal-foot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:7px}.secondary{border:1px solid #dbe3ec;background:#fff;border-radius:8px;padding:7px 11px;font-size:9px}.primary-btn{border:0;background:var(--blue);color:#fff;border-radius:8px;padding:7px 11px;font-size:9px;font-weight:800}
+.preview{font-size:9px;color:#647084;line-height:1.75;background:#f8fafc;border:1px solid #e0e7ef;border-radius:10px;padding:11px;white-space:pre-wrap}
+
+.toast{position:fixed;right:24px;bottom:24px;background:#172033;color:#fff;padding:10px 13px;border-radius:10px;font-size:9px;opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s;z-index:200}.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:1220px){.workspace{grid-template-columns:260px minmax(520px,1fr)}.right{display:none}}
+@media(max-width:850px){.workspace{grid-template-columns:78px 1fr}.logo-title,.logo-sub,.primary-row,.nav-title,.nav-item span:last-child,.workspace-list,.left-footer{display:none}.logo{justify-content:center}.nav-item{justify-content:center}.snap-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="windowbar">
+    <div class="mac"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <div class="windowtitle">ESPow Work｜Product Manager Agent</div>
+    <div class="windowright"><span class="pill"><span class="statusdot"></span>Local Workspace</span><div class="avatar">杨</div></div>
+  </div>
+
+  <div class="workspace">
+    <aside class="left">
+      <div class="brand">
+        <div class="logo"><div class="mark">E</div><div><div class="logo-title">ESPow Work</div><div class="logo-sub">Product Manager Agent</div></div></div>
+        <div class="primary-row">
+          <button class="primary" onclick="openModal('workspaceModal')">＋ 新建需求工作区</button>
+          <button class="plus" title="新建对话" onclick="openThreadModal()">＋</button>
+        </div>
+      </div>
+
+      <div class="nav">
+        <div class="nav-title">工作台</div>
+        <div class="nav-item active"><span class="nav-icon">⌂</span><span>产品经理首页</span></div>
+        <div class="nav-item"><span class="nav-icon">◫</span><span>需求工作区</span></div>
+        <div class="nav-item"><span class="nav-icon">✓</span><span>我的待办</span></div>
+        <div class="nav-item"><span class="nav-icon">⌘</span><span>Agent Runs</span></div>
+      </div>
+
+      <div class="nav-title" style="padding-left:18px">需求工作区</div>
+      <div class="workspace-list" id="workspaceList">
+        <div class="ws open" data-ws="device">
+          <div class="ws-head" onclick="toggleWs(this)">
+            <span class="chev">›</span>
+            <div class="ws-main">
+              <div class="ws-name">多国催收｜DeviceConnect Voice</div>
+              <div class="ws-meta"><span>PRD · V4</span><span>5 对话</span></div>
+            </div>
+          </div>
+          <div class="ws-body">
+            <div class="thread" data-thread="analysis" onclick="selectThread(this)">需求分析与场景梳理</div>
+            <div class="thread" data-thread="flow" onclick="selectThread(this)">人工单呼业务流程</div>
+            <div class="thread" data-thread="prototype" onclick="selectThread(this)">App Device call 原型</div>
+            <div class="thread active" data-thread="recording" onclick="selectThread(this)">录音归档规则调整</div>
+            <div class="thread" data-thread="review" onclick="selectThread(this)">开发前需求评审</div>
+            <button class="new-thread" onclick="openThreadModal()">＋ 新建对话</button>
+          </div>
+        </div>
+
+        <div class="ws" data-ws="collection">
+          <div class="ws-head" onclick="toggleWs(this)">
+            <span class="chev">›</span>
+            <div class="ws-main">
+              <div class="ws-name">催收案件作业平台优化</div>
+              <div class="ws-meta"><span>UI Design · V7</span><span>4 对话</span></div>
+            </div>
+          </div>
+          <div class="ws-body">
+            <div class="thread" onclick="selectThread(this)">客户概览字段优化</div>
+            <div class="thread" onclick="selectThread(this)">联系人模块优化</div>
+            <div class="thread" onclick="selectThread(this)">RCS / WhatsApp 消息提醒</div>
+            <div class="thread" onclick="selectThread(this)">页面最终评审</div>
+            <button class="new-thread" onclick="openThreadModal()">＋ 新建对话</button>
+          </div>
+        </div>
+
+        <div class="ws" data-ws="risk">
+          <div class="ws-head" onclick="toggleWs(this)">
+            <span class="chev">›</span>
+            <div class="ws-main">
+              <div class="ws-name">信审页面 Array 映射</div>
+              <div class="ws-meta"><span>Review</span><span>3 对话</span></div>
+            </div>
+          </div>
+          <div class="ws-body">
+            <div class="thread" onclick="selectThread(this)">需求分析</div>
+            <div class="thread" onclick="selectThread(this)">展示规则设计</div>
+            <div class="thread" onclick="selectThread(this)">PRD 评审</div>
+            <button class="new-thread" onclick="openThreadModal()">＋ 新建对话</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="left-footer"><span><span class="statusdot"></span>Agent Runtime Ready</span><span>3 Workspaces</span></div>
+    </aside>
+
+    <section class="center">
+      <div class="head">
+        <div>
+          <div class="crumb">需求工作区 / DeviceConnect Voice / 对话</div>
+          <div class="projectline">
+            <div class="project-title" id="projectTitle">多国催收｜DeviceConnect Voice</div>
+            <span class="stage">当前阶段：PRD</span>
+            <span class="thread-badge" id="threadTitle">录音归档规则调整</span>
+          </div>
+          <div class="head-sub">一个需求工作区共享 Snapshot / Decisions / Issues，不同对话独立处理具体任务。</div>
+        </div>
+        <div class="head-actions">
+          <button class="icon-btn" title="新建对话" onclick="openThreadModal()">＋</button>
+          <button class="icon-btn" title="预览工作区结构" onclick="showWorkspacePreview()">⌂</button>
+          <button class="icon-btn" title="版本记录" onclick="toast('已打开版本记录面板')">↺</button>
+          <button class="icon-btn" title="更多">•••</button>
+        </div>
+      </div>
+
+      <div class="lifecycle">
+        <div class="life"><span class="life-node done">需求分析</span><span class="life-arrow">→</span></div>
+        <div class="life"><span class="life-node done">业务流程</span><span class="life-arrow">→</span></div>
+        <div class="life"><span class="life-node done">页面原型</span><span class="life-arrow">→</span></div>
+        <div class="life"><span class="life-node current">PRD</span><span class="life-arrow">→</span></div>
+        <div class="life"><span class="life-node">需求评审</span><span class="life-arrow">→</span></div>
+        <div class="life"><span class="life-node">开发 / 联调</span><span class="life-arrow">→</span></div>
+        <div class="life"><span class="life-node">验收 / 归档</span></div>
+      </div>
+
+      <div class="capabilities">
+        <button class="cap" onclick="setPrompt(this,'重新分析当前需求，重点检查业务场景、目标、边界和遗漏。')"><span class="cap-icon">⌁</span><span><b>需求分析</b><small>场景 / 问题 / 边界</small></span></button>
+        <button class="cap" onclick="setPrompt(this,'基于当前需求生成完整业务流程，并标出判断分支、异常和回退。')"><span class="cap-icon">⇄</span><span><b>业务流程</b><small>主流程 / 分支 / 异常</small></span></button>
+        <button class="cap" onclick="setPrompt(this,'基于当前流程生成 HTML 页面原型，并创建新的版本。')"><span class="cap-icon">▣</span><span><b>页面原型</b><small>页面 / 字段 / 交互</small></span></button>
+        <button class="cap active" onclick="setPrompt(this,'基于当前 Snapshot、流程与原型更新 PRD，只修改受影响部分。')"><span class="cap-icon">M↓</span><span><b>PRD</b><small>结构化产品文档</small></span></button>
+        <button class="cap" onclick="setPrompt(this,'评审当前需求，重点检查完整性、一致性、可开发性和遗漏。')"><span class="cap-icon">◎</span><span><b>需求评审</b><small>缺口 / 风险 / 冲突</small></span></button>
+        <button class="cap" onclick="setPrompt(this,'帮我分析当前项目数据与指标，输出产品结论。')"><span class="cap-icon">▥</span><span><b>数据分析</b><small>指标 / 趋势 / 对比</small></span></button>
+      </div>
+
+      <div class="chat" id="chat">
+        <div class="snapshot">
+          <div class="snap-head"><b>当前 Workspace Snapshot</b><span>共享给本工作区全部对话</span></div>
+          <div class="snap-grid">
+            <div class="metric"><span>目标</span><b>App 人工 Device call</b></div>
+            <div class="metric"><span>当前阶段</span><b>PRD</b></div>
+            <div class="metric"><span>主产物</span><b>PRD V4</b></div>
+            <div class="metric"><span>待确认</span><b>2 项</b></div>
+          </div>
+        </div>
+
+        <div class="timeline" id="timeline">
+          <div class="msg user"><div class="bubble">录音归档失败不重试不告警，这个规则补到 PRD，并检查下是否影响流程图。</div></div>
+          <div class="msg"><div class="mini">PM</div><div class="bubble">
+            已识别为 <b>Delta 修改</b>。我会基于当前 Workspace 的共享状态继续工作，不重新读取整个需求历史。
+            <div class="plan">
+              <div class="plan-head"><span>执行计划</span><span style="color:#738096">L1 Context · PRD Skill</span></div>
+              <div class="plan-body">
+                <div class="step done"><div class="sn">✓</div><span>读取 Snapshot + 当前 PRD</span></div>
+                <div class="step current"><div class="sn">2</div><span>定位录音归档规则及关联流程</span></div>
+                <div class="step"><div class="sn">3</div><span>生成 PRD V5 增量修改</span></div>
+                <div class="step"><div class="sn">4</div><span>检查 Flow 是否同步更新</span></div>
+                <div class="step"><div class="sn">5</div><span>验证并回写 Workspace 状态</span></div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="compose-wrap">
+        <div class="compose">
+          <textarea id="input" placeholder="告诉 Product Manager Agent 你想分析、设计、修改或评审什么…"></textarea>
+          <div class="compose-bottom">
+            <div class="tools">
+              <button class="tool" onclick="toast('模拟：选择文件')">＋ 文件</button>
+              <button class="tool" onclick="toast('模拟：截取屏幕')">▣ 截图</button>
+              <button class="tool" onclick="showWorkspacePreview()">⌂ 工作区</button>
+              <button class="tool" onclick="toast('模拟：打开 Tools')">⚙ 工具</button>
+            </div>
+            <button class="send" onclick="sendMessage()">执行任务 ↑</button>
+          </div>
+        </div>
+        <div class="hint">⌘ / Ctrl + Enter 发送 · 新对话默认共享 Workspace 状态，但不继承其他对话的完整聊天记录</div>
+      </div>
+    </section>
+
+    <aside class="right">
+      <div class="context">
+        <div class="section-title">项目上下文 <span>Auto synced</span></div>
+        <div class="context-card">
+          <div class="row"><span>Workspace</span><b>DeviceConnect Voice</b></div>
+          <div class="row"><span>当前对话</span><b id="rightThread">录音归档规则调整</b></div>
+          <div class="row"><span>Context Level</span><b>L1</b></div>
+          <div class="row"><span>主 Skill</span><b>PRD Skill</b></div>
+          <div class="row"><span>Git 状态</span><b style="color:#198a62">Clean</b></div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab(this,'artifacts')">产物</button>
+        <button class="tab" onclick="switchTab(this,'issues')">未决问题</button>
+        <button class="tab" onclick="switchTab(this,'decisions')">关键决策</button>
+      </div>
+
+      <div class="tab-content active" id="artifacts">
+        <div class="cardlist">
+          <div class="side-card" onclick="previewArtifact('PRD V4','prd/device-connect-voice-v4.md','当前完整 PRD，包含背景、目标、范围、Device call、回调补偿、录音归档等规则。')">
+            <div class="topline"><b>产品需求文档</b><span class="ver">V4</span></div><div class="meta">prd/device-connect-voice-v4.md</div>
+          </div>
+          <div class="side-card" onclick="previewArtifact('Business Flow V3','artifacts/business-flow-v3.html','Device call 创建、notify、Query 补偿、录音归档完整业务链路。')">
+            <div class="topline"><b>业务流程图</b><span class="ver">V3</span></div><div class="meta">artifacts/business-flow-v3.html</div>
+          </div>
+          <div class="side-card" onclick="previewArtifact('Prototype V2','artifacts/prototype-v2.html','App Case Details、Device call、Add Record、Record 页面原型。')">
+            <div class="topline"><b>App 页面原型</b><span class="ver">V2</span></div><div class="meta">artifacts/prototype-v2.html</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="issues">
+        <div class="cardlist">
+          <div class="side-card issue"><b>Query 补偿频率与上限</b><div class="meta">联调前确定等待时间、执行频率和最大补偿次数。</div></div>
+          <div class="side-card issue"><b>录音归档异常策略</b><div class="meta">当前规则：失败仅记录，不重试、不告警。</div></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="decisions">
+        <div class="cardlist">
+          <div class="side-card decision"><b>deviceTag 优先</b><div class="meta">存在 deviceTag 时优先使用，否则使用 IMEI。</div></div>
+          <div class="side-card decision"><b>不提供多设备选择</b><div class="meta">系统直接使用关联设备，不允许人工编辑设备标识。</div></div>
+          <div class="side-card decision"><b>前端取消不改变最终事实</b><div class="meta">最终通话结果以 PT notify / Query 结果为准。</div></div>
+        </div>
+      </div>
+
+      <div class="quick">
+        <div class="section-title">快捷操作</div>
+        <div class="quick-grid">
+          <button onclick="setInput('打开当前 PRD')">打开 PRD</button>
+          <button onclick="setInput('查看最新流程图')">查看流程</button>
+          <button onclick="setInput('对比上一版本差异')">版本 Diff</button>
+          <button onclick="setInput('列出当前所有未决问题')">未决问题</button>
+          <button onclick="setInput('总结当前需求状态')">需求摘要</button>
+          <button onclick="setInput('开始最终需求评审')">开始评审</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- New workspace -->
+<div class="modal-mask" id="workspaceModal">
+  <div class="modal">
+    <div class="modal-head"><b>新建需求工作区</b><button class="x" onclick="closeModal('workspaceModal')">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label>需求名称</label><input id="wsName" value="新需求｜产品能力优化" /></div>
+      <div class="field"><label>原始需求 / 背景</label><textarea id="wsDesc" rows="4">描述这个需求为什么要做、谁会使用、当前存在什么问题。</textarea></div>
+      <div class="field"><label>初始化方式</label><input value="L2 Deep · 建立 Snapshot / Decisions / Open Issues" disabled /></div>
+    </div>
+    <div class="modal-foot"><button class="secondary" onclick="closeModal('workspaceModal')">取消</button><button class="primary-btn" onclick="createWorkspace()">创建工作区</button></div>
+  </div>
+</div>
+
+<!-- New thread -->
+<div class="modal-mask" id="threadModal">
+  <div class="modal">
+    <div class="modal-head"><b>在当前需求中新建对话</b><button class="x" onclick="closeModal('threadModal')">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label>对话 / Task 名称</label><input id="threadName" value="新的产品任务" /></div>
+      <div class="field"><label>想完成什么</label><textarea id="threadGoal" rows="4">描述这次对话想完成的具体任务。</textarea></div>
+      <div class="preview">新对话默认读取：
+• 当前 Workspace Snapshot
+• Decisions
+• Open Issues
+• 当前任务需要的相关产物
+
+不会默认加载其他对话的完整聊天历史。</div>
+    </div>
+    <div class="modal-foot"><button class="secondary" onclick="closeModal('threadModal')">取消</button><button class="primary-btn" onclick="createThread()">创建对话</button></div>
+  </div>
+</div>
+
+<!-- Preview -->
+<div class="modal-mask" id="previewModal">
+  <div class="modal">
+    <div class="modal-head"><b id="previewTitle">预览</b><button class="x" onclick="closeModal('previewModal')">×</button></div>
+    <div class="modal-body"><div class="preview" id="previewBody"></div></div>
+    <div class="modal-foot"><button class="secondary" onclick="closeModal('previewModal')">关闭</button><button class="primary-btn" onclick="toast('模拟：在独立窗口中打开');closeModal('previewModal')">打开</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const threadData={
+  analysis:{title:'需求分析与场景梳理',msg:'帮我梳理这个需求真正的业务场景，以及哪些内容应该明确不做。',reply:'已进入需求分析任务。我会优先检查：业务目标、用户角色、触发场景、现状问题、需求边界与依赖。'},
+  flow:{title:'人工单呼业务流程',msg:'把 Device call 从点击入口到通话结果回写画成完整流程。',reply:'已切换到业务流程任务。我会基于 Workspace 中稳定事实，重点处理创建、回调、Query 补偿、录音归档以及异常分支。'},
+  prototype:{title:'App Device call 原型',msg:'根据流程给我一个 App 端 Device call 的页面原型。',reply:'已切换到页面原型任务。本次只需要流程结果、页面字段和交互约束，不会重新读取完整需求历史。'},
+  recording:{title:'录音归档规则调整',msg:'录音归档失败不重试不告警，这个规则补到 PRD，并检查下是否影响流程图。',reply:'已识别为 Delta 修改。我会基于当前 Workspace 的共享状态继续工作，不重新读取整个需求历史。'},
+  review:{title:'开发前需求评审',msg:'开发前再帮我整体评审一次，看是否还有遗漏。',reply:'已切换到需求评审任务。我会检查完整性、一致性、可开发性、接口状态、异常处理与验收标准。'}
+};
+function toggleWs(head){head.parentElement.classList.toggle('open')}
+function selectThread(el){
+  document.querySelectorAll('.thread').forEach(x=>x.classList.remove('active'));el.classList.add('active');
+  const ws=el.closest('.ws');document.querySelectorAll('.ws').forEach(x=>x.classList.remove('open'));ws.classList.add('open');
+  const title=el.innerText.trim();document.getElementById('threadTitle').innerText=title;document.getElementById('rightThread').innerText=title;
+  const key=el.dataset.thread;const data=threadData[key];
+  if(data){
+    document.getElementById('timeline').innerHTML=
+      `<div class="msg user"><div class="bubble">${data.msg}</div></div>
+       <div class="msg"><div class="mini">PM</div><div class="bubble">${data.reply}
+       <div class="plan"><div class="plan-head"><span>执行计划</span><span style="color:#738096">L1 Context</span></div>
+       <div class="plan-body"><div class="step current"><div class="sn">1</div><span>识别当前 Task 与影响范围</span></div><div class="step"><div class="sn">2</div><span>加载必要 Workspace 状态</span></div><div class="step"><div class="sn">3</div><span>执行专业 Skill</span></div><div class="step"><div class="sn">4</div><span>生成并验证产物</span></div></div></div>
+       </div></div>`;
+  } else {
+    document.getElementById('timeline').innerHTML=`<div class="msg"><div class="mini">PM</div><div class="bubble">已切换到「${title}」。这是一个独立对话，但仍共享当前需求工作区的 Snapshot / Decisions / Open Issues。</div></div>`;
+  }
+}
+function setPrompt(el,text){document.querySelectorAll('.cap').forEach(x=>x.classList.remove('active'));el.classList.add('active');setInput(text)}
+function setInput(text){const i=document.getElementById('input');i.value=text;i.focus()}
+function sendMessage(){
+  const i=document.getElementById('input'),t=i.value.trim();if(!t)return;
+  const tl=document.getElementById('timeline');
+  const u=document.createElement('div');u.className='msg user';u.innerHTML=`<div class="bubble">${escapeHtml(t)}</div>`;tl.appendChild(u);
+  const a=document.createElement('div');a.className='msg';a.innerHTML=`<div class="mini">PM</div><div class="bubble">已接收。我会先判断这是 Start / Delta / 当前阶段任务，再只加载必要上下文。<div class="plan"><div class="plan-head"><span>Agent Planning</span><span style="color:#738096">Token-First</span></div><div class="plan-body"><div class="step current"><div class="sn">1</div><span>识别任务类型与影响范围</span></div><div class="step"><div class="sn">2</div><span>选择主 Skill 与必要 Source</span></div><div class="step"><div class="sn">3</div><span>执行并生成产物</span></div><div class="step"><div class="sn">4</div><span>验证并更新 Workspace 状态</span></div></div></div></div>`;tl.appendChild(a);
+  i.value='';const c=document.getElementById('chat');setTimeout(()=>c.scrollTo({top:c.scrollHeight,behavior:'smooth'}),50)
+}
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function openThreadModal(){openModal('threadModal');setTimeout(()=>document.getElementById('threadName').focus(),50)}
+function createThread(){
+  const name=document.getElementById('threadName').value.trim()||'新的产品任务';
+  const activeWs=document.querySelector('.ws.open')||document.querySelector('.ws');
+  const body=activeWs.querySelector('.ws-body');
+  const btn=body.querySelector('.new-thread');
+  const div=document.createElement('div');div.className='thread';div.innerText=name;div.onclick=function(){selectThread(div)};
+  body.insertBefore(div,btn);closeModal('threadModal');selectThread(div);toast('已在当前需求工作区新建对话')
+}
+function createWorkspace(){
+  const name=document.getElementById('wsName').value.trim()||'新需求';
+  const list=document.getElementById('workspaceList');
+  const ws=document.createElement('div');ws.className='ws open';
+  ws.innerHTML=`<div class="ws-head" onclick="toggleWs(this)"><span class="chev">›</span><div class="ws-main"><div class="ws-name">${escapeHtml(name)}</div><div class="ws-meta"><span>Analysis</span><span>1 对话</span></div></div></div><div class="ws-body"><div class="thread active" onclick="selectThread(this)">需求初始化</div><button class="new-thread" onclick="openThreadModal()">＋ 新建对话</button></div>`;
+  document.querySelectorAll('.ws').forEach(x=>x.classList.remove('open'));list.prepend(ws);closeModal('workspaceModal');
+  document.getElementById('projectTitle').innerText=name;document.getElementById('threadTitle').innerText='需求初始化';document.getElementById('rightThread').innerText='需求初始化';
+  document.getElementById('timeline').innerHTML='<div class="msg"><div class="mini">PM</div><div class="bubble">新需求工作区已创建。接下来会进行一次 L2 初始化，建立 Snapshot / Decisions / Open Issues；之后日常任务默认进入轻量 L0 / L1 模式。</div></div>';
+  toast('新需求工作区已创建')
+}
+function switchTab(btn,id){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')
+}
+function previewArtifact(title,path,desc){
+  document.getElementById('previewTitle').innerText=title;
+  document.getElementById('previewBody').innerText=`${path}\n\n${desc}\n\n在真实桌面端中，这里可以直接预览 HTML / Markdown / Diff，并支持“在新窗口打开”“复制路径”“定位到 Finder”。`;
+  openModal('previewModal')
+}
+function showWorkspacePreview(){
+  document.getElementById('previewTitle').innerText='当前 Workspace 结构';
+  document.getElementById('previewBody').innerText=`DeviceConnect Voice/\n├── source/\n├── artifacts/\n│   ├── business-flow-v3.html\n│   └── prototype-v2.html\n├── prd/\n│   └── device-connect-voice-v4.md\n├── snapshot.md\n├── decisions.md\n├── open-issues.md\n└── threads/\n    ├── requirement-analysis\n    ├── business-flow\n    ├── prototype\n    ├── recording-rule\n    └── review`;
+  openModal('previewModal')
+}
+function toast(text){const t=document.getElementById('toast');t.innerText=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+document.getElementById('input').addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter')sendMessage()})
+document.querySelectorAll('.modal-mask').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}))
+</script>
+</body>
+</html>

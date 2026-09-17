@@ -1,0 +1,33 @@
+id: prototype
+name: 页面原型
+description: 把已确认交互方案转化为可打开、可操作、可比较、可版本化和可确认的 HTML 产品原型
+version: 0.2.0
+mode:
+  - prototype
+inputs:
+  - shared_requirement_state
+  - stage_working_state
+  - upstream_stage_summaries
+  - user_request
+  - confirmed_interaction_design
+  - relevant_solution_design
+  - requirement_snapshot
+  - existing_prototype
+  - ui_baseline
+  - relevant_decisions
+  - relevant_open_issues
+outputs:
+  - prototype_metadata
+  - html_candidate
+  - structural_diff
+  - validation
+  - prototype_status
+allowed_tools:
+  - workspace_read
+  - artifact_find
+  - artifact_read
+  - artifact_next_version
+  - prototype_ready
+  - prototype_submit
+  - prototype_write
+  - workspace_validate

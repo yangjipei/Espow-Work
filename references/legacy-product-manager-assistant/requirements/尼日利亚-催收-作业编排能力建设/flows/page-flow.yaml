@@ -1,0 +1,37 @@
+ui_change: false
+prototype_required: false
+prototype_mode: none
+page_mode: crud
+prototype_slug: app-case-list
+baseline_key: app-case-list
+surfaces:
+  - id: APP_CASE_LIST
+    platform: app
+    name: App 案件列表
+    page_mode: crud
+    prototype_slug: app-case-list
+nodes:
+  - id: PF001
+    type: page
+    surface: APP_CASE_LIST
+    name: App 案件列表
+    action: 坐席进入现有 App 案件列表处理案件，不新增独立的自动作业页面。
+  - id: PF002
+    type: table
+    surface: APP_CASE_LIST
+    name: 其他工具作业提示
+    position: 案件列表的案件信息区域
+    component: 作业中状态提示
+    action: 仅展示当前案件是否有其他工具正在作业；不展示轮次、执行结果或异常信息。
+    fields:
+      - 当前案件有无其他工具正在作业
+  - id: PF003
+    type: rule
+    surface: APP_CASE_LIST
+    name: 展示边界
+    action: App 端仅展示当前案件有无其他工具正在作业；不提供暂停、跳过、手工补投或自动计划启停入口。
+  - id: PF004
+    type: end
+    surface: APP_CASE_LIST
+    name: 继续人工处理
+    action: 坐席查看其他工具作业提示后，继续使用现有案件处理能力；人工处理与自动作业并行。

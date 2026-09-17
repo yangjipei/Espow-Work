@@ -1,0 +1,52 @@
+# macOS
+.DS_Store
+__MACOSX/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+
+# Build outputs
+out/
+dist/
+build/
+release/
+
+# Rust
+espow-runtime/target/
+
+# Tests / coverage
+coverage/
+.test-dist/
+playwright-report/
+test-results/
+
+# Cache / temporary
+.cache/
+tmp/
+temp/
+logs/
+downloads/
+
+# IDE / editor
+.idea/
+*.swp
+
+# Generated files
+*.map
+*.log
+
+# Local databases
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+
+# Packaging
+*.dmg
+*.pkg
+*.zip

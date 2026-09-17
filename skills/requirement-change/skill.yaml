@@ -1,0 +1,50 @@
+id: requirement-change
+name: 需求变更
+description: 处理已有 Requirement 上的增量修改
+version: 0.1.0
+mode:
+  - delta
+inputs:
+  - user_change_request
+  - requirement_context
+  - related_artifacts
+outputs:
+  - change_summary
+  - impact_assessment
+  - affected_artifacts
+  - unaffected_artifacts
+  - open_questions
+  - decisions_affected
+  - files_read
+  - candidate_changes
+  - final_changes
+  - validation_result
+allowed_tools:
+  - workspace_read
+  - artifact_find
+  - artifact_read
+  - change_result_submit
+  - business_flow_next_version
+  - business_flow_ready
+  - business_flow_submit
+  - business_flow_write
+  - solution_design_next_version
+  - solution_coverage_check
+  - solution_overdesign_check
+  - solution_design_submit
+  - solution_design_write
+  - interaction_design_next_version
+  - interaction_design_ready
+  - interaction_design_submit
+  - interaction_design_write
+  - prototype_ready
+  - prototype_submit
+  - prototype_write
+  - product_spec_next_version
+  - product_spec_ready
+  - product_spec_submit
+  - product_spec_write
+  - artifact_next_version
+  - artifact_diff
+  - artifact_write
+  - workspace_validate

@@ -1,0 +1,127 @@
+title: Legacy Business Flow Compatibility
+legacy_recovered: true
+legacy_source: flows/business-flow.md
+stages:
+  - id: LEGACY_S1
+    name: 历史业务流程
+    nodes:
+      - id: LEGACY_BF001
+        type: action
+        text: 尼日利亚-催收-作业编排能力建设｜业务流程
+      - id: LEGACY_BF002
+        type: action
+        text: 1. 流程目标
+      - id: LEGACY_BF003
+        type: action
+        text: 以决策引擎生成的案件级当日 Decision Plan 为唯一策略来源，由催收系统在 WAT（UTC+1）时区内可靠执行最多 3 轮 IVR / AI Robot 自动触达，并确保轮次可推进、投递不重复、回调可追溯、当日任务不跨日。
+      - id: LEGACY_BF004
+        type: action
+        text: 2. 参与方与边界
+      - id: LEGACY_BF005
+        type: action
+        text: | 参与方 | 流程职责 | 不承担的职责 |
+      - id: LEGACY_BF006
+        type: action
+        text: |---|---|---|
+      - id: LEGACY_BF007
+        type: action
+        text: | 决策引擎 | 判断自动编排准入；返回当日全部轮次、执行时间、工具及准入条件 | 不执行触达，不维护服务商执行状态 |
+      - id: LEGACY_BF008
+        type: action
+        text: | 催收系统 | 保存计划快照；定时触发；执行条件；幂等投递；接收回调；记录状态、结果与退出原因 | 不本地配置或重算编排策略 |
+      - id: LEGACY_BF009
+        type: action
+        text: | IVR / AI Robot 服务商 | 接收任务、执行自动触达、异步回调状态与结果 | 不决定后续轮次是否执行 |
+      - id: LEGACY_BF010
+        type: action
+        text: | 催收坐席 | 查看自动任务上下文并按现有能力人工处理 | 不作为自动 Tool，不控制自动计划启停 |
+      - id: LEGACY_BF011
+        type: action
+        text: 3. 主流程
+      - id: LEGACY_BF012
+        type: action
+        text: 阶段 A：生成当日计划
+      - id: LEGACY_BF013
+        type: action
+        text: 每个 WAT 业务日，催收系统按案件请求决策。
+      - id: LEGACY_BF014
+        type: action
+        text: 决策引擎判断案件是否命中自动编排标签。
+      - id: LEGACY_BF015
+        type: action
+        text: 未命中：返回 `automation_enabled = false`，催收系统不创建自动轮次，流程结束。
+      - id: LEGACY_BF016
+        type: action
+        text: 命中：返回 `automation_enabled = true` 及包含 1～3 轮的当日 Decision Plan。
+      - id: LEGACY_BF017
+        type: action
+        text: 催收系统校验计划可解析性，并以案件、业务日为粒度保存执行快照。
+      - id: LEGACY_BF018
+        type: action
+        text: 计划不可解析：记录计划异常，不投递任何自动任务，转人工可见异常提示。
+      - id: LEGACY_BF019
+        type: action
+        text: 阶段 B：轮次到时与准入判断
+      - id: LEGACY_BF020
+        type: action
+        text: 对每个计划轮次依次执行：
+      - id: LEGACY_BF021
+        type: action
+        text: 到达本轮 WAT 执行时间。
+      - id: LEGACY_BF022
+        type: action
+        text: 检查是否已日切；已日切则终止当日剩余轮次。
+      - id: LEGACY_BF023
+        type: action
+        text: 检查本轮是否已进入终态；已进入则不重复处理。
+      - id: LEGACY_BF024
+        type: action
+        text: 若存在上一轮且上一轮仍为处理中，将上一轮标记为超时失败。
+      - id: LEGACY_BF025
+        type: action
+        text: 读取案件最新状态及历史轮次结果。
+      - id: LEGACY_BF026
+        type: action
+        text: 执行 Decision Plan 中本轮准入条件。
+      - id: LEGACY_BF027
+        type: action
+        text: 条件不满足：本轮标记为跳过，记录条件判断结果与原因，然后等待下一轮。
+      - id: LEGACY_BF028
+        type: action
+        text: 条件满足：进入幂等投递。
+      - id: LEGACY_BF029
+        type: action
+        text: 阶段 C：幂等投递与服务商执行
+      - id: LEGACY_BF030
+        type: action
+        text: 以 `case_id + business_date + round_no` 检查业务幂等键。
+      - id: LEGACY_BF031
+        type: action
+        text: 已存在成功投递记录：本次不再投递，记录重复触发并结束本轮触发动作。
+      - id: LEGACY_BF032
+        type: action
+        text: 不存在成功投递记录：生成唯一 `dispatch_id`，按 `tool_code` 路由至 IVR 或 AI Robot。
+      - id: LEGACY_BF033
+        type: action
+        text: 服务商受理成功：本轮进入处理中，等待异步回调。
+      - id: LEGACY_BF034
+        type: action
+        text: 服务商受理失败或调用异常：本轮标记为投递失败；不即时重算编排，后续轮次仍按原计划到时判断。
+      - id: LEGACY_BF035
+        type: action
+        text: 阶段 D：回调与结果更新
+      - id: LEGACY_BF036
+        type: action
+        text: 服务商携带 `dispatch_id` 回调。
+      - id: LEGACY_BF037
+        type: action
+        text: 催收系统定位原业务日、原轮次投递记录。
+      - id: LEGACY_BF038
+        type: action
+        text: 无法定位：记录孤立回调异常，不改变任何轮次。
+      - id: LEGACY_BF039
+        type: action
+        text: 可以定位：按回调映射更新原轮次状态、结果及回调时间，并保留回调轨迹。
+      - id: LEGACY_BF040
+        type: action
+        text: 若原轮次已因超时失败或日切终止，回调仅更新该轮次的最新执行结果及迟到标识，不回滚、不取消、不影响当前或后续轮次。

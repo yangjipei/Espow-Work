@@ -1,0 +1,40 @@
+id: product-spec
+name: 产品需求文档
+description: 把已确认的产品设计收敛为研发、测试和产品可直接使用的产品规格
+version: 0.2.0
+mode:
+  - product-spec
+inputs:
+  - shared_requirement_state
+  - stage_working_state
+  - upstream_stage_summaries
+  - user_request
+  - requirement_snapshot
+  - confirmed_requirement_analysis
+  - confirmed_business_flow
+  - confirmed_solution_design
+  - confirmed_interaction_design_if_applicable
+  - confirmed_prototype_if_available
+  - active_decisions
+  - open_issues
+  - existing_prd
+outputs:
+  - product_spec_model
+  - markdown_candidate
+  - rules
+  - states
+  - fields
+  - failures_and_recovery
+  - open_issues
+  - consistency_issues
+  - acceptance_criteria
+  - product_spec_status
+allowed_tools:
+  - workspace_read
+  - artifact_find
+  - artifact_read
+  - product_spec_next_version
+  - product_spec_ready
+  - product_spec_submit
+  - product_spec_write
+  - workspace_validate

@@ -1,0 +1,40 @@
+id: solution-design
+name: 方案设计
+description: 把已确认的需求分析和业务流程转化为可追踪、可验证的产品能力方案
+version: 0.2.0
+mode:
+  - solution
+inputs:
+  - shared_requirement_state
+  - stage_working_state
+  - upstream_stage_summaries
+  - user_request
+  - confirmed_requirement_analysis
+  - confirmed_business_flow
+  - requirement_snapshot
+  - relevant_decisions
+  - relevant_open_issues
+  - existing_solution
+outputs:
+  - solution_overview
+  - scope
+  - capabilities
+  - rules
+  - states
+  - data_objects
+  - exception_and_recovery
+  - product_surfaces
+  - decisions
+  - open_questions
+  - flow_conflicts
+  - solution_status
+allowed_tools:
+  - workspace_read
+  - artifact_find
+  - artifact_read
+  - solution_design_next_version
+  - solution_coverage_check
+  - solution_overdesign_check
+  - solution_design_submit
+  - solution_design_write
+  - workspace_validate

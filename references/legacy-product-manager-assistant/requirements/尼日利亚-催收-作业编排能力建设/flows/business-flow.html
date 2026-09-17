@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>尼日利亚催收｜作业编排业务流程</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#667085;--line:#cfd8e6;--blue:#2563eb;--blue2:#eaf1ff;--green:#15803d;--green2:#eaf8ef;--amber:#b45309;--amber2:#fff5df;--red:#b42318;--red2:#fff0ee;--violet:#7c3aed;--violet2:#f3edff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}.page{max-width:1180px;margin:auto;padding:34px 24px 64px}.hero{padding:30px;border-radius:20px;background:linear-gradient(125deg,#172554,#1d4ed8 65%,#0f766e);color:#fff;box-shadow:0 18px 45px #1e3a8a2b}.hero h1{margin:0 0 8px;font-size:28px}.hero p{margin:0;max-width:850px;color:#dbeafe}.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.pill{padding:5px 10px;border-radius:999px;background:#ffffff24;border:1px solid #ffffff38}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 14px}.toolbar h2{margin:0;font-size:18px}.buttons{display:flex;gap:8px}button{border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 12px;border-radius:9px;cursor:pointer}button:hover{border-color:var(--blue);color:var(--blue)}.stage{background:var(--card);border:1px solid #e4e9f1;border-radius:16px;margin:12px 0;box-shadow:0 6px 20px #1720330b;overflow:hidden}.stage summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:18px 20px;font-weight:700}.stage summary::-webkit-details-marker{display:none}.stage summary:after{content:'＋';margin-left:auto;color:var(--muted);font-size:20px}.stage[open] summary:after{content:'−'}.num{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--blue2);color:var(--blue)}.owner{font-weight:500;color:var(--muted)}.content{padding:0 20px 22px}.flow{display:flex;align-items:stretch;gap:12px;overflow-x:auto;padding:8px 2px 14px}.node{position:relative;min-width:164px;max-width:210px;flex:1;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff}.node:not(:last-child):after{content:'→';position:absolute;right:-12px;top:50%;transform:translate(50%,-50%);color:var(--blue);font-weight:800;background:var(--bg);padding:0 2px}.node strong{display:block;margin-bottom:4px}.node small{color:var(--muted)}.decision{border-color:#f1c36c;background:var(--amber2)}.success{border-color:#9bd4ae;background:var(--green2)}.stop{border-color:#f1ada8;background:var(--red2)}.async{border-color:#c4a7fa;background:var(--violet2)}.branches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}.branch{border-left:4px solid var(--green);background:var(--green2);padding:10px 12px;border-radius:8px}.branch.no{border-color:var(--red);background:var(--red2)}.branch b{display:block}.note{margin-top:12px;padding:12px 14px;border-radius:10px;background:#f8fafc;border:1px dashed var(--line);color:var(--muted)}.matrix{width:100%;border-collapse:collapse;background:#fff}.matrix th,.matrix td{text-align:left;padding:11px 12px;border-bottom:1px solid #e5eaf1}.matrix th{background:#eef3f9}.legend{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0;color:var(--muted)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.footer{margin-top:25px;color:var(--muted);text-align:center}@media(max-width:720px){.page{padding:18px 12px 42px}.hero{padding:22px}.branches{grid-template-columns:1fr}.toolbar{align-items:flex-start;flex-direction:column}.flow{flex-direction:column}.node{max-width:none}.node:not(:last-child):after{content:'↓';right:50%;top:auto;bottom:-18px;transform:translate(50%,0)}}
+  </style>
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <h1>尼日利亚催收 · 作业编排业务流程</h1>
+    <p>决策引擎负责“决定做什么”，催收系统负责“按计划可靠执行”。一案一天一份计划，最多三轮，超时继续推进，迟到回调不回滚，WAT 日切不跨日。</p>
+    <div class="meta"><span class="pill">时区 WAT（UTC+1）</span><span class="pill">工具 IVR / AI Robot</span><span class="pill">最多 3 轮</span><span class="pill">人工与自动并行</span></div>
+  </header>
+
+  <div class="toolbar"><h2>端到端流程</h2><div class="buttons"><button id="expand">全部展开</button><button id="collapse">全部收起</button></div></div>
+  <div class="legend"><span><i class="dot" style="background:#2563eb"></i>系统动作</span><span><i class="dot" style="background:#b45309"></i>判断</span><span><i class="dot" style="background:#15803d"></i>正常结果</span><span><i class="dot" style="background:#b42318"></i>退出/异常</span><span><i class="dot" style="background:#7c3aed"></i>异步回调</span></div>
+
+  <details class="stage" open><summary><span class="num">A</span><span>生成当日计划</span><span class="owner">决策引擎 → 催收系统</span></summary><div class="content">
+    <div class="flow"><div class="node"><strong>按案件请求决策</strong><small>确定 WAT 业务日</small></div><div class="node decision"><strong>命中自动编排标签？</strong><small>唯一准入来源</small></div><div class="node"><strong>返回 Decision Plan</strong><small>一次返回 1～3 轮</small></div><div class="node decision"><strong>计划可解析？</strong><small>字段、时间、工具、条件</small></div><div class="node success"><strong>保存执行快照</strong><small>一案一天一份</small></div></div>
+    <div class="branches"><div class="branch"><b>是：准入且可解析</b>保存计划，等待首轮执行时间。</div><div class="branch no"><b>否：未准入或不可解析</b>未准入直接结束；解析失败记录计划异常并提示人工。</div></div>
+  </div></details>
+
+  <details class="stage" open><summary><span class="num">B</span><span>轮次到时与准入判断</span><span class="owner">催收系统</span></summary><div class="content">
+    <div class="flow"><div class="node"><strong>本轮时间到达</strong><small>使用 WAT</small></div><div class="node decision"><strong>是否已日切？</strong><small>日切后不再执行</small></div><div class="node decision"><strong>上一轮仍处理中？</strong><small>下一轮时间即截止点</small></div><div class="node"><strong>读取最新状态</strong><small>案件 + 历史轮次</small></div><div class="node decision"><strong>准入条件满足？</strong><small>执行计划内条件</small></div></div>
+    <div class="branches"><div class="branch"><b>满足</b>进入幂等检查与工具投递。</div><div class="branch no"><b>不满足</b>本轮标记为已跳过，记录判断依据与退出原因，等待下一轮。</div></div>
+    <div class="note">若上一轮仍处理中，先将上一轮标记为“超时失败”，再继续本轮判断；不会因为上一轮无结果而阻塞。</div>
+  </div></details>
+
+  <details class="stage" open><summary><span class="num">C</span><span>幂等投递与服务商执行</span><span class="owner">催收系统 → IVR / AI Robot</span></summary><div class="content">
+    <div class="flow"><div class="node decision"><strong>幂等键已成功投递？</strong><small>case + date + round</small></div><div class="node"><strong>生成 dispatch_id</strong><small>每次实际投递唯一</small></div><div class="node"><strong>按 tool_code 路由</strong><small>IVR 或 AI Robot</small></div><div class="node decision"><strong>服务商受理成功？</strong><small>保存调用结果</small></div><div class="node success"><strong>进入处理中</strong><small>等待异步回调</small></div></div>
+    <div class="branches"><div class="branch"><b>首次成功投递</b>本轮进入处理中，保留请求、响应和时间。</div><div class="branch no"><b>重复或失败</b>重复触发由幂等拦截；调用失败标记投递失败。两者均不阻塞后续轮次。</div></div>
+  </div></details>
+
+  <details class="stage" open><summary><span class="num">D</span><span>异步回调与结果更新</span><span class="owner">服务商 → 催收系统</span></summary><div class="content">
+    <div class="flow"><div class="node async"><strong>服务商回调</strong><small>携带 dispatch_id</small></div><div class="node decision"><strong>可定位原轮次？</strong><small>匹配业务日与投递记录</small></div><div class="node decision"><strong>是否迟到回调？</strong><small>原轮次已超时或终止</small></div><div class="node success"><strong>更新原轮次</strong><small>状态、结果、时间、轨迹</small></div><div class="node stop"><strong>隔离编排影响</strong><small>不回滚后续轮次</small></div></div>
+    <div class="branches"><div class="branch"><b>正常回调</b>按字段映射更新本轮最新状态与结果。</div><div class="branch no"><b>迟到或孤立回调</b>迟到回调仅补充原轮次；无法定位则记录异常，不修改轮次。</div></div>
+  </div></details>
+
+  <details class="stage" open><summary><span class="num">E</span><span>WAT 日切与次日重建</span><span class="owner">催收系统 → 决策引擎</span></summary><div class="content">
+    <div class="flow"><div class="node"><strong>到达 WAT 日切</strong><small>关闭当日执行窗口</small></div><div class="node stop"><strong>终止剩余轮次</strong><small>未执行及未完成</small></div><div class="node async"><strong>继续接收历史回调</strong><small>只更新原轮次</small></div><div class="node"><strong>次日重新请求决策</strong><small>不沿用昨日计划</small></div><div class="node success"><strong>生成次日计划</strong><small>进入新业务日</small></div></div>
+    <div class="note">日切终止的是当日编排推进，不拒绝已投递任务的服务商回调。</div>
+  </div></details>
+
+  <details class="stage"><summary><span class="num">F</span><span>坐席人工并行处理</span><span class="owner">催收坐席</span></summary><div class="content">
+    <div class="flow"><div class="node"><strong>查看自动任务提示</strong><small>工具、轮次、状态、结果、异常</small></div><div class="node"><strong>执行现有人工处理</strong><small>不受自动任务锁定</small></div><div class="node success"><strong>自动计划照常推进</strong><small>双方互不暂停或取消</small></div></div>
+    <div class="note">人工不是自动 Tool 或 Round；本阶段不设计人工与自动的互斥机制。</div>
+  </div></details>
+
+  <div class="toolbar"><h2>异常处理矩阵</h2></div>
+  <div style="overflow:auto;border-radius:14px;border:1px solid #e4e9f1"><table class="matrix"><thead><tr><th>场景</th><th>本轮处理</th><th>对后续轮次的影响</th></tr></thead><tbody>
+    <tr><td>计划不可解析</td><td>计划级异常，不投递</td><td>当日自动流程停止</td></tr><tr><td>条件不满足 / 执行异常</td><td>跳过或异常，记录原因</td><td>后续轮次独立判断</td></tr><tr><td>服务商调用失败</td><td>投递失败</td><td>不阻塞</td></tr><tr><td>上一轮未完成</td><td>下一轮到时置超时失败</td><td>当前轮继续判断</td></tr><tr><td>迟到回调</td><td>补充原轮次并标记迟到</td><td>不回滚、不取消</td></tr><tr><td>日切</td><td>终止当日剩余任务</td><td>次日重新生成计划</td></tr>
+  </tbody></table></div>
+  <p class="footer">业务流程版本 1.0 · 基于需求分析产物生成</p>
+</main>
+<script>
+  const stages=[...document.querySelectorAll('.stage')];
+  document.getElementById('expand').onclick=()=>stages.forEach(x=>x.open=true);
+  document.getElementById('collapse').onclick=()=>stages.forEach(x=>x.open=false);
+</script>
+</body>
+</html>

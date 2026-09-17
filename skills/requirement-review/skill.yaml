@@ -1,0 +1,36 @@
+id: requirement-review
+name: 需求评审
+description: 从产品、研发和测试视角判断当前需求是否已具备无需临时口头补充的落地条件
+version: 0.2.0
+mode:
+  - review
+inputs:
+  - shared_requirement_state
+  - stage_working_state
+  - upstream_stage_summaries
+  - user_request
+  - requirement_snapshot
+  - confirmed_requirement_analysis
+  - confirmed_business_flow
+  - confirmed_solution_design
+  - confirmed_interaction_design_if_applicable
+  - confirmed_prototype_if_applicable
+  - confirmed_product_spec
+  - active_decisions
+  - open_issues
+outputs:
+  - review_result
+  - review_issues
+  - coverage
+  - consistency
+  - recommended_actions
+allowed_tools:
+  - workspace_read
+  - artifact_find
+  - artifact_read
+  - requirement_review_next_version
+  - requirement_review_ready
+  - requirement_review_submit
+  - requirement_review_status
+  - requirement_review_write
+  - workspace_validate

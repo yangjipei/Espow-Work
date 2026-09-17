@@ -1,0 +1,49 @@
+contract_version: 3.4
+source: flows/page-flow.yaml
+legacy_page_flow_recovered: false
+prototype_mode: new_page
+page_mode: crud
+direct_patch: true
+spec_required: false
+complexity:
+  source: heuristic
+  pages: 1
+  ui_nodes: 1
+  overlays: 0
+  explicit_complex: false
+  cross_page_dependency: false
+prototype_slug: app-case-list
+version: 1
+shell_source: "golden-reference:crud"
+reuse_existing_prototype: false
+draft_html: prototype/workdraft/app-case-list-v1.html
+final_html: prototype/app-case-list-v1.html
+spec: null
+baseline:
+  valid: true
+  missing:
+  requested_mode: crud
+  effective_mode: crud
+  user_skill_rules: .agents/skills/prd-html-prototype/references/prototype-html.md
+  prototype_rules: 07_Prototype_Base_Styles/prototype.rules.md
+  base_css: 07_Prototype_Base_Styles/assets/base.css
+  reference: 07_Prototype_Base_Styles/examples/reference-list-drawer.html
+  fixed_system_ui:
+    - Sidebar
+    - Header
+    - Tabs
+    - Breadcrumb
+    - Page Title
+    - Search / Filter
+    - Table
+    - Button
+    - Drawer
+    - Pagination
+  allow_generic_fallback: false
+changes:
+  - id: P001
+    type: page
+    name: App 案件列表
+  - id: P002
+    type: end
+    name: 坐席继续使用现有案件列表处理案件

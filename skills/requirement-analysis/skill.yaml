@@ -1,0 +1,27 @@
+id: requirement-analysis
+name: 需求分析
+description: 通过 Dynamic Mainline + Working Context 持续收敛当前有效需求事实，不依赖默认 Conversation History
+version: 0.4.0
+mode:
+  - start
+  - analysis
+inputs:
+  - analysis_mainline
+  - analysis_working_context
+  - mainline_bootstrap_mode
+  - user_request
+  - requirement_snapshot
+  - source_materials
+  - current_user_input
+outputs:
+  - assistant_reply
+  - analysis_state_patch
+  - mainline_schema_delta
+  - working_context_delta
+  - resolved_questions
+  - new_questions
+  - readiness
+allowed_tools:
+  - artifact_find
+  - artifact_read
+  - analysis_turn_submit

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ESPow Work｜Product Manager Agent Desktop V3</title>
+<style>
+:root{--bg:#f3f6fa;--card:#fff;--soft:#f8fafc;--text:#172033;--muted:#738096;--line:#e1e8f0;--blue:#2f6fed;--blue2:#edf4ff;--green:#198a62;--green2:#eaf8f2;--orange:#c87b18;--orange2:#fff4e7;--purple:#7358d4;--purple2:#f1edff;--shadow:0 18px 50px rgba(25,39,67,.09)}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;overflow:hidden;background:radial-gradient(circle at 8% -10%,rgba(47,111,237,.09),transparent 25%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer}.app{height:100vh;display:grid;grid-template-rows:42px 1fr;padding:12px;gap:10px}.windowbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 8px}.mac{display:flex;gap:8px}.dot{width:12px;height:12px;border-radius:50%}.dot:nth-child(1){background:#ff5f57}.dot:nth-child(2){background:#febc2e}.dot:nth-child(3){background:#28c840}.windowtitle{font-size:12px;font-weight:800;color:#58667b}.windowright{justify-self:end;display:flex;align-items:center;gap:8px}.pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;font-size:11px;color:#66758a}.statusdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#20a36d;margin-right:5px}.avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#23395f,#466dba);color:#fff;font-size:11px;font-weight:800}
+.shell{min-height:0;display:grid;grid-template-columns:250px minmax(0,1fr);background:#fff;border:1px solid #dce5ef;border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.left{min-width:0;background:#f8fafc;border-right:1px solid var(--line);display:flex;flex-direction:column}.brand{padding:17px 15px 13px;border-bottom:1px solid var(--line)}.logo{display:flex;align-items:center;gap:10px}.mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#1e3154,#3670cf);color:#fff;display:grid;place-items:center;font-weight:900}.logo-title{font-size:14px;font-weight:900}.logo-sub{font-size:10px;color:var(--muted);margin-top:2px}.new-req{margin-top:13px;width:100%;border:0;background:#172033;color:#fff;padding:10px;border-radius:10px;font-size:11px;font-weight:800}.nav{padding:11px 10px}.nav-title{padding:7px 10px 5px;font-size:9px;color:#99a4b5;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.nav-item{display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:9px;font-size:11px;color:#566378;margin:2px 0;cursor:pointer}.nav-item:hover{background:#eef3f8}.nav-item.active{background:var(--blue2);color:#2458ad;font-weight:800}.nav-icon{width:18px;text-align:center}.req-list{padding:0 10px 12px;overflow:auto;min-height:0}.req-row{padding:9px 10px;border-radius:9px;margin:3px 0;border:1px solid transparent;cursor:pointer}.req-row:hover{background:#fff;border-color:#e1e7ef}.req-row.active{background:#fff;border-color:#d8e2ee;box-shadow:0 4px 14px rgba(30,45,70,.05)}.req-name{font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.req-meta{display:flex;justify-content:space-between;margin-top:4px;font-size:8px;color:#909aab}.left-footer{margin-top:auto;border-top:1px solid var(--line);padding:11px 13px;font-size:9px;color:#718096;display:flex;justify-content:space-between}
+.main{min-width:0;min-height:0;display:grid;grid-template-rows:auto 1fr}.top{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;background:#fff}.crumb{font-size:9px;color:#8d98a8;margin-bottom:5px}.page-title{font-size:18px;font-weight:900;display:flex;align-items:center;gap:8px}.page-sub{font-size:10px;color:var(--muted);margin-top:5px}.top-actions{display:flex;gap:7px}.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 10px;font-size:9px;color:#5e6a7e}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:800}.content{min-height:0;overflow:auto;padding:18px 20px 24px;background:#fbfcfe}.view{display:none}.view.active{display:block}
+.hero{background:linear-gradient(135deg,#172033,#2c4268);color:#fff;border-radius:16px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;box-shadow:0 12px 28px rgba(23,32,51,.12)}.hero h2{margin:0;font-size:17px}.hero p{margin:6px 0 0;color:#cfdaeb;font-size:10px;line-height:1.6}.hero-chips{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.hero-chip{padding:8px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);font-size:8px;color:#edf3ff}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:13px}.metric{background:#fff;border:1px solid #e1e8f0;border-radius:12px;padding:13px}.metric span{display:block;font-size:8px;color:#8d98a8}.metric strong{display:block;font-size:22px;margin-top:4px}.metric small{display:block;font-size:7.5px;color:#7d899a;margin-top:3px}.grid2{display:grid;grid-template-columns:1.3fr .9fr;gap:11px;margin-top:13px}.card{background:#fff;border:1px solid #e1e8f0;border-radius:12px;padding:12px}.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.card-head h3{margin:0;font-size:11px}.card-head button{border:0;background:transparent;color:#4f74ad;font-size:8px}
+.req-table{width:100%;border-collapse:collapse}.req-table th,.req-table td{font-size:8px;text-align:left;padding:8px 6px;border-bottom:1px solid #edf1f5}.req-table th{color:#8d98a8}.req-table tr:last-child td{border-bottom:0}.req-table tbody tr{cursor:pointer}.req-table tbody tr:hover{background:#f8fbff}.tag{display:inline-block;padding:3px 6px;border-radius:999px;font-size:7px;font-weight:800}.tag.stage{background:var(--purple2);color:#674bb8}.tag.go{background:var(--blue2);color:#285baa}.tag.wait{background:var(--orange2);color:#a26413}.tag.done{background:var(--green2);color:#1d7a56}
+.item-list{display:grid;gap:7px}.item{background:#fff;border:1px solid #e1e8f0;border-radius:9px;padding:9px;cursor:pointer}.item:hover{border-color:#bfd0e8}.item.todo{border-left:3px solid #e2a047}.item.runok{border-left:3px solid #4ca77a}.item b{font-size:9px;display:block}.item p{margin:4px 0 0;font-size:7.5px;color:#7d8999;line-height:1.5}.item-foot{display:flex;justify-content:space-between;margin-top:6px;font-size:7px;color:#9aa4b2}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}.filter{border:1px solid #dfe6ef;background:#fff;border-radius:999px;padding:6px 8px;font-size:8px;color:#66758a}.filter.active{background:#edf4ff;color:#285baa;border-color:#c9dbfb;font-weight:800}.page-list{display:grid;gap:8px}.page-row{background:#fff;border:1px solid #e1e8f0;border-radius:11px;padding:11px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.page-row:hover{border-color:#bfd0e8}.page-row h4{margin:0;font-size:10px}.page-row p{margin:4px 0 0;font-size:8px;color:#7e8999;line-height:1.5}.meta{margin-top:6px;font-size:7px;color:#98a2b1}.row-actions{display:flex;gap:5px}.mini-btn{border:1px solid #dce4ed;background:#fff;border-radius:8px;padding:6px 8px;font-size:8px}.mini-btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.progress{width:120px;height:6px;border-radius:999px;overflow:hidden;background:#edf1f5}.progress span{display:block;height:100%;background:var(--blue);border-radius:999px}
+.workspace-view{padding:0!important;overflow:hidden}.workspace-layout{height:100%;display:grid;grid-template-columns:245px minmax(0,1fr) 300px}.ws-left{border-right:1px solid var(--line);background:#f8fafc;display:flex;flex-direction:column;min-width:0}.ws-info{padding:14px;border-bottom:1px solid var(--line)}.ws-info b{font-size:11px}.ws-info p{font-size:8px;color:#7f8a9a;line-height:1.5;margin:5px 0 0}.ws-new-thread{margin:11px 12px;border:1px dashed #ccd7e4;background:#fff;color:#5f6d82;padding:8px;border-radius:9px;font-size:9px;text-align:left}.thread-list{padding:0 9px 10px;overflow:auto}.thread{padding:9px;border-radius:9px;margin:2px 0;cursor:pointer;font-size:9px;color:#657286}.thread:hover{background:#eef3f8}.thread.active{background:var(--blue2);color:#2859a5;font-weight:800}.thread small{display:block;color:#96a0af;font-size:7px;margin-top:3px}
+.ws-center{min-width:0;display:grid;grid-template-rows:auto auto 1fr auto;background:#fff}.ws-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}.ws-title{font-size:13px;font-weight:900}.ws-title-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.ws-sub{font-size:8px;color:#7d899a;margin-top:4px}.lifecycle{padding:9px 12px;border-bottom:1px solid var(--line);display:flex;gap:5px;overflow:auto;background:#fbfcfe}.life-node{flex:0 0 auto;padding:5px 7px;border:1px solid #e0e7ef;background:#fff;border-radius:7px;font-size:7px;color:#6d788a}.life-node.done{background:var(--green2);color:#187653}.life-node.current{background:var(--blue2);color:#285baa;font-weight:800}.chat{min-height:0;overflow:auto;padding:18px 20px}.snap{border:1px solid #dfe7f2;background:linear-gradient(135deg,#fbfdff,#f7faff);border-radius:12px;padding:11px;margin-bottom:14px}.snap-head{display:flex;justify-content:space-between;font-size:8px;font-weight:800;margin-bottom:8px}.snap-head span{color:#8d98a8;font-weight:500}.snap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.snap-item{background:#fff;border:1px solid #e5eaf1;border-radius:8px;padding:8px}.snap-item span{display:block;font-size:7px;color:#909aaa}.snap-item b{display:block;font-size:9px;margin-top:3px}.msg{display:flex;gap:8px;margin:12px 0}.msg.user{justify-content:flex-end}.agent-mini{width:25px;height:25px;border-radius:8px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:8px;font-weight:900;flex:0 0 auto}.bubble{max-width:80%;border:1px solid #e1e7ef;background:#f8fafc;border-radius:12px;padding:10px 12px;font-size:9px;line-height:1.65}.msg.user .bubble{background:#172033;color:#fff;border-color:#172033}.plan{margin-top:8px;background:#fff;border:1px solid #dce6f4;border-radius:10px;overflow:hidden;color:var(--text)}.plan-head{display:flex;justify-content:space-between;padding:7px 9px;border-bottom:1px solid #edf1f6;font-size:8px;font-weight:800}.plan-body{padding:6px}.step{display:flex;align-items:center;gap:6px;padding:5px 3px;font-size:8px;color:#657286}.sn{width:17px;height:17px;border-radius:50%;display:grid;place-items:center;background:#edf2f7;font-size:7px;font-weight:800}.step.done .sn{background:var(--green2);color:var(--green)}.step.current .sn{background:var(--blue2);color:var(--blue)}.step.current{color:#2758a1;font-weight:800}.composer-wrap{border-top:1px solid var(--line);padding:9px 12px 11px}.composer{border:1px solid #d8e1ec;border-radius:11px;padding:8px}.composer textarea{width:100%;border:0;outline:0;resize:none;min-height:38px;max-height:100px;font-size:9px}.composer-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:5px}.tool-row{display:flex;gap:5px}.tool{border:0;background:#f3f6fa;color:#657286;border-radius:7px;padding:5px 6px;font-size:7px}.send{border:0;background:var(--blue);color:#fff;border-radius:8px;padding:6px 10px;font-size:8px;font-weight:800}
+.ws-right{border-left:1px solid var(--line);background:#fbfcfe;display:grid;grid-template-rows:auto auto 1fr}.ws-context{padding:12px;border-bottom:1px solid var(--line)}.context-card{background:#fff;border:1px solid #e0e7ef;border-radius:10px;padding:9px}.context-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed #edf1f5;font-size:7.5px}.context-row:last-child{border-bottom:0}.context-row span{color:#8c96a6}.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line);background:#fff}.tab{border:0;background:#fff;padding:9px 5px;font-size:7px;color:#7a8799;border-bottom:2px solid transparent}.tab.active{color:#285baa;border-bottom-color:var(--blue);font-weight:800}.tab-content{display:none;padding:11px;overflow:auto}.tab-content.active{display:block}.side-card{background:#fff;border:1px solid #e1e8f0;border-radius:8px;padding:8px;margin-bottom:6px}.side-card b{font-size:8px}.side-card p{font-size:7px;color:#7f8999;margin:4px 0 0;line-height:1.45}.side-card.issue{border-left:3px solid #e2a047}.side-card.decision{border-left:3px solid #4ca77a}
+.modal-mask{position:fixed;inset:0;background:rgba(23,32,51,.34);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}.modal-mask.show{display:flex}.modal{width:min(520px,90vw);background:#fff;border-radius:16px;box-shadow:0 28px 80px rgba(23,32,51,.2);border:1px solid #dce4ee;overflow:hidden}.modal-head{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modal-head b{font-size:12px}.x{border:0;background:#f4f6f9;width:27px;height:27px;border-radius:8px}.modal-body{padding:16px}.field{margin-bottom:12px}.field label{display:block;font-size:9px;font-weight:800;margin-bottom:6px;color:#647084}.field input,.field textarea{width:100%;border:1px solid #dbe3ec;border-radius:9px;padding:9px 10px;font-size:10px;outline:0}.preview{font-size:9px;color:#647084;line-height:1.75;background:#f8fafc;border:1px solid #e0e7ef;border-radius:10px;padding:11px;white-space:pre-wrap}.modal-foot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:7px}.secondary{border:1px solid #dbe3ec;background:#fff;border-radius:8px;padding:7px 11px;font-size:9px}.primary-btn{border:0;background:var(--blue);color:#fff;border-radius:8px;padding:7px 11px;font-size:9px;font-weight:800}.toast{position:fixed;right:24px;bottom:24px;background:#172033;color:#fff;padding:10px 13px;border-radius:10px;font-size:9px;opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s;z-index:200}.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:1180px){.grid2{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.workspace-layout{grid-template-columns:220px 1fr}.ws-right{display:none}}@media(max-width:850px){.shell{grid-template-columns:78px 1fr}.logo-title,.logo-sub,.new-req,.nav-title,.nav-item span:last-child,.req-list,.left-footer{display:none}.logo{justify-content:center}.nav-item{justify-content:center}.workspace-layout{grid-template-columns:1fr}.ws-left{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="windowbar">
+    <div class="mac"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <div class="windowtitle">ESPow Work｜Product Manager Agent</div>
+    <div class="windowright"><span class="pill"><span class="statusdot"></span>Local Workspace</span><div class="avatar">杨</div></div>
+  </div>
+  <div class="shell">
+    <aside class="left">
+      <div class="brand">
+        <div class="logo"><div class="mark">E</div><div><div class="logo-title">ESPow Work</div><div class="logo-sub">Product Manager Agent</div></div></div>
+        <button class="new-req" onclick="openModal('workspaceModal')">＋ 新建需求</button>
+      </div>
+      <div class="nav">
+        <div class="nav-title">工作台</div>
+        <div class="nav-item active" data-view="dashboard" onclick="showView('dashboard',this)"><span class="nav-icon">⌂</span><span>总览</span></div>
+        <div class="nav-item" data-view="todo" onclick="showView('todo',this)"><span class="nav-icon">!</span><span>待我处理</span></div>
+        <div class="nav-item" data-view="runs" onclick="showView('runs',this)"><span class="nav-icon">⌘</span><span>Agent Runs</span></div>
+      </div>
+      <div class="nav-title" style="padding-left:20px">需求</div>
+      <div class="req-list">
+        <div class="req-row active" onclick="openWorkspace('多国催收｜DeviceConnect Voice',this)"><div class="req-name">多国催收｜DeviceConnect Voice</div><div class="req-meta"><span>PRD</span><span>2 待确认</span></div></div>
+        <div class="req-row" onclick="openWorkspace('催收案件作业平台优化',this)"><div class="req-name">催收案件作业平台优化</div><div class="req-meta"><span>UI Design</span><span>1 待确认</span></div></div>
+        <div class="req-row" onclick="openWorkspace('信审页面 Array 映射',this)"><div class="req-name">信审页面 Array 映射</div><div class="req-meta"><span>Review</span><span>0 待确认</span></div></div>
+        <div class="req-row" onclick="openWorkspace('预测式链路体验优化',this)"><div class="req-name">预测式链路体验优化</div><div class="req-meta"><span>Analysis</span><span>1 待确认</span></div></div>
+      </div>
+      <div class="left-footer"><span><span class="statusdot"></span>Agent Ready</span><span>4 需求</span></div>
+    </aside>
+
+    <main class="main">
+      <div class="top">
+        <div><div class="crumb" id="crumb">工作台 / 总览</div><div class="page-title" id="pageTitle">产品经理工作台</div><div class="page-sub" id="pageSub">跨需求查看进展、待决问题、Agent 执行结果和最近产物。</div></div>
+        <div class="top-actions"><button class="btn" onclick="toast('已刷新工作台')">刷新</button><button class="btn primary" onclick="openModal('workspaceModal')">＋ 新建需求</button></div>
+      </div>
+      <div class="content" id="content">
+        <section class="view active" id="dashboard">
+          <div class="hero"><div><h2>今天需要你关注 3 件事</h2><p>Agent 已整理所有需求工作区，只把真正需要产品经理判断和推进的事项聚合到这里。</p></div><div class="hero-chips"><span class="hero-chip">2 个待决问题</span><span class="hero-chip">1 个待评审需求</span><span class="hero-chip">3 个 Agent 已完成任务</span></div></div>
+          <div class="metrics"><div class="metric"><span>进行中需求</span><strong>4</strong><small>2 个本周有更新</small></div><div class="metric"><span>待我处理</span><strong>3</strong><small>判断 / 确认 / 评审</small></div><div class="metric"><span>Agent Runs</span><strong>6</strong><small>3 完成 · 1 执行中</small></div><div class="metric"><span>本周产物</span><strong>9</strong><small>PRD / Flow / Prototype</small></div></div>
+          <div class="grid2">
+            <div class="card"><div class="card-head"><h3>我的需求</h3><button>查看全部</button></div><table class="req-table"><thead><tr><th>需求</th><th>当前阶段</th><th>状态</th><th>最近动作</th></tr></thead><tbody>
+              <tr onclick="openWorkspace('多国催收｜DeviceConnect Voice')"><td><b>DeviceConnect Voice</b></td><td><span class="tag stage">PRD</span></td><td><span class="tag go">进行中</span></td><td>PRD V5 草稿</td></tr>
+              <tr onclick="openWorkspace('催收案件作业平台优化')"><td><b>催收案件作业平台优化</b></td><td><span class="tag stage">UI Design</span></td><td><span class="tag wait">待确认</span></td><td>联系人方案 V8</td></tr>
+              <tr onclick="openWorkspace('信审页面 Array 映射')"><td><b>信审页面 Array 映射</b></td><td><span class="tag stage">Review</span></td><td><span class="tag stage">待评审</span></td><td>Review 完成</td></tr>
+              <tr onclick="openWorkspace('预测式链路体验优化')"><td><b>预测式链路体验优化</b></td><td><span class="tag stage">Analysis</span></td><td><span class="tag go">进行中</span></td><td>场景补充</td></tr>
+            </tbody></table></div>
+            <div class="card"><div class="card-head"><h3>待我处理</h3><button onclick="showView('todo')">查看全部</button></div><div class="item-list">
+              <div class="item todo" onclick="openWorkspace('多国催收｜DeviceConnect Voice')"><b>确认 Query 补偿频率与上限</b><p>DeviceConnect Voice · 将影响回调补偿实现和验收。</p><div class="item-foot"><span>需要决策</span><span>今天</span></div></div>
+              <div class="item todo" onclick="openWorkspace('催收案件作业平台优化')"><b>确认 RCS 消息提醒方案</b><p>全局消息提醒 vs 案件内弹窗，需要拍板。</p><div class="item-foot"><span>需要确认</span><span>今天</span></div></div>
+              <div class="item todo" onclick="openWorkspace('信审页面 Array 映射')"><b>完成开发前需求评审</b><p>Agent 已完成预评审，发现 2 个待确认问题。</p><div class="item-foot"><span>需要评审</span><span>明天</span></div></div>
+            </div></div>
+          </div>
+          <div class="grid2">
+            <div class="card"><div class="card-head"><h3>Agent 最近工作</h3><button onclick="showView('runs')">查看全部</button></div><div class="item-list">
+              <div class="item runok"><b>更新 DeviceConnect Voice PRD V5</b><p>补充录音归档异常策略并检查影响范围。</p><div class="item-foot"><span>PRD Skill</span><span>刚刚</span></div></div>
+              <div class="item runok"><b>生成联系人模块原型 V8</b><p>优化联系人判断路径与 RCS / WhatsApp 入口。</p><div class="item-foot"><span>UI Design Skill</span><span>18 分钟前</span></div></div>
+              <div class="item"><b>Array 映射评审发现 2 个问题</b><p>规则字段描述与验收口径仍需确认。</p><div class="item-foot"><span>Review Skill</span><span>42 分钟前</span></div></div>
+            </div></div>
+            <div class="card"><div class="card-head"><h3>最近产物</h3><button>产物中心</button></div><div class="item-list">
+              <div class="item" onclick="preview('PRD V5','DeviceConnect Voice / PRD V5 草稿\n\n已补充录音归档失败不重试、不告警规则。')"><b>DeviceConnect Voice · PRD V5</b><p>Markdown · 刚刚生成</p></div>
+              <div class="item" onclick="preview('Prototype V8','催收案件作业平台 / Prototype V8\n\n联系人模块与消息提醒最新原型。')"><b>催收案件平台 · Prototype V8</b><p>HTML · 18 分钟前</p></div>
+              <div class="item" onclick="preview('Flow V3','DeviceConnect Voice / Business Flow V3\n\n人工单呼完整业务链路。')"><b>DeviceConnect Voice · Flow V3</b><p>HTML · 今天</p></div>
+            </div></div>
+          </div>
+        </section>
+
+        <section class="view" id="todo">
+          <div class="filters"><button class="filter active">全部 3</button><button class="filter">待决策 1</button><button class="filter">待确认 1</button><button class="filter">待评审 1</button></div>
+          <div class="page-list">
+            <div class="page-row"><div><h4>确认 Query 补偿频率与上限</h4><p>DeviceConnect Voice · 补偿等待时间、频率、上限仍需产品与技术联调确认。</p><div class="meta">来源：open-issues.md · PRD 阶段</div></div><div class="row-actions"><button class="mini-btn" onclick="openWorkspace('多国催收｜DeviceConnect Voice')">进入需求</button><button class="mini-btn primary" onclick="toast('已进入决策讨论')">开始讨论</button></div></div>
+            <div class="page-row"><div><h4>确认 RCS 消息提醒方案</h4><p>催收案件平台 · 全局消息提醒 vs 案件内弹窗，需要确定主方案。</p><div class="meta">来源：open-issues.md · UI Design 阶段</div></div><div class="row-actions"><button class="mini-btn" onclick="openWorkspace('催收案件作业平台优化')">进入需求</button><button class="mini-btn primary">继续讨论</button></div></div>
+            <div class="page-row"><div><h4>完成 Array 映射开发前评审</h4><p>Agent 已完成 Review，发现 2 个描述问题需要产品确认。</p><div class="meta">来源：Review Skill · Review 阶段</div></div><div class="row-actions"><button class="mini-btn" onclick="openWorkspace('信审页面 Array 映射')">进入需求</button><button class="mini-btn primary">查看评审</button></div></div>
+          </div>
+        </section>
+
+        <section class="view" id="runs">
+          <div class="filters"><button class="filter active">全部 6</button><button class="filter">执行中 1</button><button class="filter">已完成 3</button><button class="filter">需要关注 2</button></div>
+          <div class="page-list">
+            <div class="page-row"><div><h4>正在检查 DeviceConnect Voice Flow 影响范围</h4><p>录音归档失败不重试不告警 · 正在验证是否需要更新 Business Flow。</p><div class="meta">PRD Skill → Flow Check · L1 Context</div></div><div><div class="progress"><span style="width:68%"></span></div><div class="meta" style="text-align:right">68%</div></div></div>
+            <div class="page-row"><div><h4>已生成 PRD V5 增量草稿</h4><p>只修改录音归档相关章节，未重写无关内容。</p><div class="meta">DeviceConnect Voice · 刚刚</div></div><div class="row-actions"><button class="mini-btn" onclick="preview('PRD V5','模拟打开 PRD V5 Diff 预览。')">查看产物</button></div></div>
+            <div class="page-row"><div><h4>联系人模块 Prototype V8 已完成</h4><p>包含 RCS / WhatsApp 入口、号码状态与联系人结构优化。</p><div class="meta">催收案件作业平台 · 18 分钟前</div></div><div class="row-actions"><button class="mini-btn" onclick="openWorkspace('催收案件作业平台优化')">进入需求</button></div></div>
+          </div>
+        </section>
+
+        <section class="view workspace-view" id="workspaceView">
+          <div class="workspace-layout">
+            <aside class="ws-left">
+              <div class="ws-info"><b id="wsLeftTitle">DeviceConnect Voice</b><p>一个需求 = 一个 Workspace。每个对话都是独立 Task，但共享需求状态。</p></div>
+              <button class="ws-new-thread" onclick="openModal('threadModal')">＋ 新建对话</button>
+              <div class="thread-list" id="threadList">
+                <div class="thread" onclick="selectThread(this,'需求分析与场景梳理')">需求分析与场景梳理<small>Analysis · 已完成</small></div>
+                <div class="thread" onclick="selectThread(this,'人工单呼业务流程')">人工单呼业务流程<small>Flow · 已完成</small></div>
+                <div class="thread" onclick="selectThread(this,'App Device call 原型')">App Device call 原型<small>Prototype · 已完成</small></div>
+                <div class="thread active" onclick="selectThread(this,'录音归档规则调整')">录音归档规则调整<small>PRD · 进行中</small></div>
+                <div class="thread" onclick="selectThread(this,'开发前需求评审')">开发前需求评审<small>Review · 待开始</small></div>
+              </div>
+            </aside>
+            <section class="ws-center">
+              <div class="ws-head"><div><div class="ws-title-row"><div class="ws-title" id="wsTitle">多国催收｜DeviceConnect Voice</div><span class="tag stage">当前阶段：PRD</span></div><div class="ws-sub" id="threadTitle">录音归档规则调整</div></div><div class="row-actions"><button class="mini-btn" onclick="previewWorkspace()">工作区结构</button><button class="mini-btn" onclick="toast('已打开版本历史')">版本</button></div></div>
+              <div class="lifecycle"><span class="life-node done">需求分析</span><span class="life-node done">业务流程</span><span class="life-node done">页面原型</span><span class="life-node current">PRD</span><span class="life-node">需求评审</span><span class="life-node">开发 / 联调</span><span class="life-node">验收 / 归档</span></div>
+              <div class="chat" id="chat">
+                <div class="snap"><div class="snap-head"><b>Workspace Snapshot</b><span>共享给本需求全部对话</span></div><div class="snap-grid"><div class="snap-item"><span>目标</span><b>App 人工 Device call</b></div><div class="snap-item"><span>当前阶段</span><b>PRD</b></div><div class="snap-item"><span>主产物</span><b>PRD V4</b></div><div class="snap-item"><span>待确认</span><b>2 项</b></div></div></div>
+                <div id="timeline"><div class="msg user"><div class="bubble">录音归档失败不重试不告警，这个规则补到 PRD，并检查下是否影响流程图。</div></div><div class="msg"><div class="agent-mini">PM</div><div class="bubble">已识别为 <b>Delta 修改</b>。本次只读取 Workspace Snapshot、当前 PRD 和录音相关流程。<div class="plan"><div class="plan-head"><span>执行计划</span><span style="color:#738096">L1 Context · PRD Skill</span></div><div class="plan-body"><div class="step done"><div class="sn">✓</div><span>读取 Snapshot + 当前 PRD</span></div><div class="step current"><div class="sn">2</div><span>定位录音归档规则及关联流程</span></div><div class="step"><div class="sn">3</div><span>生成 PRD V5 增量修改</span></div><div class="step"><div class="sn">4</div><span>验证并回写 Workspace 状态</span></div></div></div></div></div></div>
+              </div>
+              <div class="composer-wrap"><div class="composer"><textarea id="input" placeholder="告诉 Product Manager Agent 你想分析、设计、修改或评审什么…"></textarea><div class="composer-bottom"><div class="tool-row"><button class="tool">＋ 文件</button><button class="tool">▣ 截图</button><button class="tool" onclick="previewWorkspace()">⌂ 工作区</button><button class="tool">⚙ 工具</button></div><button class="send" onclick="sendMessage()">执行任务 ↑</button></div></div></div>
+            </section>
+            <aside class="ws-right">
+              <div class="ws-context"><div class="card-head"><h3>项目上下文</h3><span style="font-size:7px;color:#8f99a9">Auto synced</span></div><div class="context-card"><div class="context-row"><span>当前对话</span><b id="contextThread">录音归档规则调整</b></div><div class="context-row"><span>Context Level</span><b>L1</b></div><div class="context-row"><span>主 Skill</span><b>PRD Skill</b></div><div class="context-row"><span>Git 状态</span><b style="color:#198a62">Clean</b></div></div></div>
+              <div class="tabs"><button class="tab active" onclick="switchTab(this,'artifacts')">产物</button><button class="tab" onclick="switchTab(this,'issues')">未决问题</button><button class="tab" onclick="switchTab(this,'decisions')">关键决策</button></div>
+              <div class="tab-content active" id="artifacts"><div class="side-card"><b>产品需求文档 · V4</b><p>prd/device-connect-voice-v4.md</p></div><div class="side-card"><b>业务流程图 · V3</b><p>artifacts/business-flow-v3.html</p></div><div class="side-card"><b>App 页面原型 · V2</b><p>artifacts/prototype-v2.html</p></div></div>
+              <div class="tab-content" id="issues"><div class="side-card issue"><b>Query 补偿频率与上限</b><p>联调前确认等待时间、频率和最大补偿次数。</p></div><div class="side-card issue"><b>录音归档异常策略</b><p>失败仅记录，不重试、不告警。</p></div></div>
+              <div class="tab-content" id="decisions"><div class="side-card decision"><b>deviceTag 优先</b><p>存在 deviceTag 时优先使用，否则使用 IMEI。</p></div><div class="side-card decision"><b>不提供多设备选择</b><p>系统直接使用关联设备。</p></div></div>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal-mask" id="workspaceModal"><div class="modal"><div class="modal-head"><b>新建需求工作区</b><button class="x" onclick="closeModal('workspaceModal')">×</button></div><div class="modal-body"><div class="field"><label>需求名称</label><input id="newReqName" value="新需求｜产品能力优化"></div><div class="field"><label>业务诉求 / 背景</label><textarea rows="4">描述为什么要做、谁使用、当前问题和预期结果。</textarea></div><div class="preview">创建后将进行一次 L2 初始化：
+• 生成 Snapshot
+• 建立 Decisions
+• 建立 Open Issues
+• 创建第一个“需求初始化”对话
+
+之后日常修改默认进入 L0 / L1。</div></div><div class="modal-foot"><button class="secondary" onclick="closeModal('workspaceModal')">取消</button><button class="primary-btn" onclick="createWorkspace()">创建工作区</button></div></div></div>
+
+<div class="modal-mask" id="threadModal"><div class="modal"><div class="modal-head"><b>在当前需求中新建对话</b><button class="x" onclick="closeModal('threadModal')">×</button></div><div class="modal-body"><div class="field"><label>对话 / Task 名称</label><input id="newThreadName" value="新的产品任务"></div><div class="field"><label>这次想完成什么</label><textarea rows="4">描述本次具体目标。</textarea></div><div class="preview">新对话共享 Workspace 状态，但不会默认读取其他对话的完整聊天历史。</div></div><div class="modal-foot"><button class="secondary" onclick="closeModal('threadModal')">取消</button><button class="primary-btn" onclick="createThread()">创建对话</button></div></div></div>
+
+<div class="modal-mask" id="previewModal"><div class="modal"><div class="modal-head"><b id="previewTitle">预览</b><button class="x" onclick="closeModal('previewModal')">×</button></div><div class="modal-body"><div class="preview" id="previewBody"></div></div><div class="modal-foot"><button class="secondary" onclick="closeModal('previewModal')">关闭</button><button class="primary-btn" onclick="toast('模拟：在独立窗口打开');closeModal('previewModal')">打开</button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const meta={
+ dashboard:['工作台 / 总览','产品经理工作台','跨需求查看进展、待决问题、Agent 执行结果和最近产物。'],
+ todo:['工作台 / 待我处理','待我处理','这里只聚合真正需要产品经理判断、确认和评审的事情。'],
+ runs:['工作台 / Agent Runs','Agent Runs','查看 Agent 当前在做什么、做完了什么，以及哪些结果需要关注。']
+};
+function showView(id,el){
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+ const n=el||document.querySelector(`.nav-item[data-view="${id}"]`);if(n)n.classList.add('active');
+ if(meta[id]){document.getElementById('crumb').innerText=meta[id][0];document.getElementById('pageTitle').innerText=meta[id][1];document.getElementById('pageSub').innerText=meta[id][2]}
+}
+function openWorkspace(name,row){
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById('workspaceView').classList.add('active');
+ document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.req-row').forEach(x=>x.classList.remove('active'));if(row)row.classList.add('active');
+ document.getElementById('crumb').innerText='需求 / '+name;document.getElementById('pageTitle').innerText=name;document.getElementById('pageSub').innerText='一个需求工作区共享长期状态，并可创建多个独立对话 / Task。';
+ document.getElementById('wsTitle').innerText=name;document.getElementById('wsLeftTitle').innerText=name;
+}
+function selectThread(el,title){
+ document.querySelectorAll('.thread').forEach(x=>x.classList.remove('active'));el.classList.add('active');document.getElementById('threadTitle').innerText=title;document.getElementById('contextThread').innerText=title;
+ document.getElementById('timeline').innerHTML=`<div class="msg"><div class="agent-mini">PM</div><div class="bubble">已切换到「${title}」。这是当前需求下的独立 Task，会共享 Workspace Snapshot / Decisions / Open Issues，但不会默认加载其他对话的完整历史。</div></div>`;
+}
+function sendMessage(){
+ const i=document.getElementById('input'),t=i.value.trim();if(!t)return;const tl=document.getElementById('timeline');
+ const u=document.createElement('div');u.className='msg user';u.innerHTML=`<div class="bubble">${escapeHtml(t)}</div>`;tl.appendChild(u);
+ const a=document.createElement('div');a.className='msg';a.innerHTML=`<div class="agent-mini">PM</div><div class="bubble">已接收。我会先判断 Start / Delta / 当前阶段任务，再只加载必要上下文。<div class="plan"><div class="plan-head"><span>Agent Planning</span><span style="color:#738096">Token-First</span></div><div class="plan-body"><div class="step current"><div class="sn">1</div><span>识别任务类型与影响范围</span></div><div class="step"><div class="sn">2</div><span>选择主 Skill 与必要 Source</span></div><div class="step"><div class="sn">3</div><span>执行并生成产物</span></div><div class="step"><div class="sn">4</div><span>验证并更新 Workspace 状态</span></div></div></div></div>`;tl.appendChild(a);
+ i.value='';const c=document.getElementById('chat');setTimeout(()=>c.scrollTo({top:c.scrollHeight,behavior:'smooth'}),50)
+}
+function switchTab(btn,id){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function openModal(id){document.getElementById(id).classList.add('show')}function closeModal(id){document.getElementById(id).classList.remove('show')}
+function createWorkspace(){const name=document.getElementById('newReqName').value.trim()||'新需求';closeModal('workspaceModal');openWorkspace(name);document.getElementById('timeline').innerHTML='<div class="msg"><div class="agent-mini">PM</div><div class="bubble">新需求工作区已建立。接下来会进行一次 L2 初始化，生成 Snapshot / Decisions / Open Issues，并创建第一个“需求初始化”对话。</div></div>';toast('新需求工作区已创建')}
+function createThread(){const name=document.getElementById('newThreadName').value.trim()||'新的产品任务';const list=document.getElementById('threadList');document.querySelectorAll('.thread').forEach(x=>x.classList.remove('active'));const d=document.createElement('div');d.className='thread active';d.innerHTML=`${escapeHtml(name)}<small>New Task · 刚刚</small>`;d.onclick=()=>selectThread(d,name);list.prepend(d);closeModal('threadModal');selectThread(d,name);toast('已创建新对话')}
+function preview(title,body){document.getElementById('previewTitle').innerText=title;document.getElementById('previewBody').innerText=body;openModal('previewModal')}
+function previewWorkspace(){preview('Workspace 结构',`DeviceConnect Voice/
+├── source/
+├── artifacts/
+│   ├── business-flow-v3.html
+│   └── prototype-v2.html
+├── prd/
+│   └── device-connect-voice-v4.md
+├── snapshot.md
+├── decisions.md
+├── open-issues.md
+└── threads/
+    ├── requirement-analysis
+    ├── business-flow
+    ├── prototype
+    ├── recording-rule
+    └── review`)}
+function toast(text){const t=document.getElementById('toast');t.innerText=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+document.getElementById('input').addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter')sendMessage()});
+document.querySelectorAll('.modal-mask').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+</script>
+</body>
+</html>

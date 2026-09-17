@@ -1,0 +1,259 @@
+traceability_version: 4.0
+grounding: prd/prd-grounding.yaml
+source_paths:
+  business_flow: flows/business-flow.yaml
+  page_flow: flows/page-flow.yaml
+  prototype_contract: prototype/prototype-contract.yaml
+  decisions: 01-decisions.md
+source_hashes:
+  business_flow: f03711cc44c5aa3131de09098f3f4e85bde896e0090932d0bd7fe0319b43c870
+  page_flow: 68b99fb0d600a7503009035f5bee57d314eb8830941eef4540507287579f5c98
+  prototype_contract: 94cde3fb5edc66aee7446e19c1ab74f4de3c9acd3837d3d3e9e1cd3a557f02f7
+  decisions: 006d3d80a0e45eff849ec10e2301b6ffd9f7a33bbfc42a4c1afdf09bfbc82e64
+sections:
+  section_6_2:
+    business_refs:
+      - LEGACY_BF001
+      - LEGACY_BF002
+      - LEGACY_BF004
+      - LEGACY_BF005
+      - LEGACY_BF006
+      - LEGACY_BF010
+      - LEGACY_BF011
+      - LEGACY_BF013
+      - LEGACY_BF017
+      - LEGACY_BF023
+    decision_refs:
+      - D001
+      - D002
+      - D003
+      - D004
+      - D005
+      - D006
+      - D007
+      - D008
+      - D009
+  section_6_3:
+    topics:
+      system-overview:
+        - LEGACY_BF001
+        - LEGACY_BF002
+        - LEGACY_BF004
+        - LEGACY_BF005
+        - LEGACY_BF006
+        - LEGACY_BF010
+        - LEGACY_BF011
+        - LEGACY_BF013
+        - LEGACY_BF017
+        - LEGACY_BF023
+      decision-plan:
+        - LEGACY_BF003
+        - LEGACY_BF007
+        - LEGACY_BF012
+        - LEGACY_BF014
+        - LEGACY_BF016
+        - LEGACY_BF026
+      dispatch-idempotency:
+        - LEGACY_BF008
+        - LEGACY_BF018
+        - LEGACY_BF028
+        - LEGACY_BF029
+        - LEGACY_BF030
+        - LEGACY_BF031
+        - LEGACY_BF032
+        - LEGACY_BF036
+      round-execution:
+        - LEGACY_BF009
+        - LEGACY_BF015
+        - LEGACY_BF019
+        - LEGACY_BF020
+        - LEGACY_BF021
+        - LEGACY_BF022
+        - LEGACY_BF024
+        - LEGACY_BF025
+        - LEGACY_BF027
+        - LEGACY_BF034
+        - LEGACY_BF037
+        - LEGACY_BF038
+        - LEGACY_BF039
+        - LEGACY_BF040
+      callback-status:
+        - LEGACY_BF033
+        - LEGACY_BF035
+  section_6_4:
+    surfaces:
+      APP_CASE_LIST:
+        page_refs:
+          - PF001
+          - PF002
+          - PF003
+          - PF004
+        prototype_refs:
+          - PROTO001
+          - PROTO002
+ref_index:
+  LEGACY_BF001:
+    source: business-flow
+    text: 尼日利亚-催收-作业编排能力建设｜业务流程
+  LEGACY_BF002:
+    source: business-flow
+    text: 1. 流程目标
+  LEGACY_BF003:
+    source: business-flow
+    text: 以决策引擎生成的案件级当日 Decision Plan 为唯一策略来源，由催收系统在 WAT（UTC+1）时区内可靠执行最多 3 轮 IVR / AI Robot 自动触达，并确保轮次可推进、投递不重复、回调可追溯、当日任务不跨日。
+  LEGACY_BF004:
+    source: business-flow
+    text: 2. 参与方与边界
+  LEGACY_BF005:
+    source: business-flow
+    text: | 参与方 | 流程职责 | 不承担的职责 |
+  LEGACY_BF006:
+    source: business-flow
+    text: |---|---|---|
+  LEGACY_BF007:
+    source: business-flow
+    text: | 决策引擎 | 判断自动编排准入；返回当日全部轮次、执行时间、工具及准入条件 | 不执行触达，不维护服务商执行状态 |
+  LEGACY_BF008:
+    source: business-flow
+    text: | 催收系统 | 保存计划快照；定时触发；执行条件；幂等投递；接收回调；记录状态、结果与退出原因 | 不本地配置或重算编排策略 |
+  LEGACY_BF009:
+    source: business-flow
+    text: | IVR / AI Robot 服务商 | 接收任务、执行自动触达、异步回调状态与结果 | 不决定后续轮次是否执行 |
+  LEGACY_BF010:
+    source: business-flow
+    text: | 催收坐席 | 查看自动任务上下文并按现有能力人工处理 | 不作为自动 Tool，不控制自动计划启停 |
+  LEGACY_BF011:
+    source: business-flow
+    text: 3. 主流程
+  LEGACY_BF012:
+    source: business-flow
+    text: 阶段 A：生成当日计划
+  LEGACY_BF013:
+    source: business-flow
+    text: 每个 WAT 业务日，催收系统按案件请求决策。
+  LEGACY_BF014:
+    source: business-flow
+    text: 决策引擎判断案件是否命中自动编排标签。
+  LEGACY_BF015:
+    source: business-flow
+    text: 未命中：返回 `automation_enabled = false`，催收系统不创建自动轮次，流程结束。
+  LEGACY_BF016:
+    source: business-flow
+    text: 命中：返回 `automation_enabled = true` 及包含 1～3 轮的当日 Decision Plan。
+  LEGACY_BF017:
+    source: business-flow
+    text: 催收系统校验计划可解析性，并以案件、业务日为粒度保存执行快照。
+  LEGACY_BF018:
+    source: business-flow
+    text: 计划不可解析：记录计划异常，不投递任何自动任务，转人工可见异常提示。
+  LEGACY_BF019:
+    source: business-flow
+    text: 阶段 B：轮次到时与准入判断
+  LEGACY_BF020:
+    source: business-flow
+    text: 对每个计划轮次依次执行：
+  LEGACY_BF021:
+    source: business-flow
+    text: 到达本轮 WAT 执行时间。
+  LEGACY_BF022:
+    source: business-flow
+    text: 检查是否已日切；已日切则终止当日剩余轮次。
+  LEGACY_BF023:
+    source: business-flow
+    text: 检查本轮是否已进入终态；已进入则不重复处理。
+  LEGACY_BF024:
+    source: business-flow
+    text: 若存在上一轮且上一轮仍为处理中，将上一轮标记为超时失败。
+  LEGACY_BF025:
+    source: business-flow
+    text: 读取案件最新状态及历史轮次结果。
+  LEGACY_BF026:
+    source: business-flow
+    text: 执行 Decision Plan 中本轮准入条件。
+  LEGACY_BF027:
+    source: business-flow
+    text: 条件不满足：本轮标记为跳过，记录条件判断结果与原因，然后等待下一轮。
+  LEGACY_BF028:
+    source: business-flow
+    text: 条件满足：进入幂等投递。
+  LEGACY_BF029:
+    source: business-flow
+    text: 阶段 C：幂等投递与服务商执行
+  LEGACY_BF030:
+    source: business-flow
+    text: 以 `case_id + business_date + round_no` 检查业务幂等键。
+  LEGACY_BF031:
+    source: business-flow
+    text: 已存在成功投递记录：本次不再投递，记录重复触发并结束本轮触发动作。
+  LEGACY_BF032:
+    source: business-flow
+    text: 不存在成功投递记录：生成唯一 `dispatch_id`，按 `tool_code` 路由至 IVR 或 AI Robot。
+  LEGACY_BF033:
+    source: business-flow
+    text: 服务商受理成功：本轮进入处理中，等待异步回调。
+  LEGACY_BF034:
+    source: business-flow
+    text: 服务商受理失败或调用异常：本轮标记为投递失败；不即时重算编排，后续轮次仍按原计划到时判断。
+  LEGACY_BF035:
+    source: business-flow
+    text: 阶段 D：回调与结果更新
+  LEGACY_BF036:
+    source: business-flow
+    text: 服务商携带 `dispatch_id` 回调。
+  LEGACY_BF037:
+    source: business-flow
+    text: 催收系统定位原业务日、原轮次投递记录。
+  LEGACY_BF038:
+    source: business-flow
+    text: 无法定位：记录孤立回调异常，不改变任何轮次。
+  LEGACY_BF039:
+    source: business-flow
+    text: 可以定位：按回调映射更新原轮次状态、结果及回调时间，并保留回调轨迹。
+  LEGACY_BF040:
+    source: business-flow
+    text: 若原轮次已因超时失败或日切终止，回调仅更新该轮次的最新执行结果及迟到标识，不回滚、不取消、不影响当前或后续轮次。
+  PF001:
+    source: page-flow
+    text: 坐席进入现有 App 案件列表处理案件，不新增独立的自动作业页面。
+  PF002:
+    source: page-flow
+    text: 仅展示当前案件是否有其他工具正在作业；不展示轮次、执行结果或异常信息。
+  PF003:
+    source: page-flow
+    text: App 端仅展示当前案件有无其他工具正在作业；不提供暂停、跳过、手工补投或自动计划启停入口。
+  PF004:
+    source: page-flow
+    text: 坐席查看其他工具作业提示后，继续使用现有案件处理能力；人工处理与自动作业并行。
+  PROTO001:
+    source: prototype
+    text: name=App 案件列表
+  PROTO002:
+    source: prototype
+    text: name=坐席继续使用现有案件列表处理案件
+  D001:
+    source: decision
+    text: Decision Plan 按案件生成，每个案件每天一份并包含当日全部轮次及后续轮次条件
+  D002:
+    source: decision
+    text: 下一轮到时若上一轮未完成，则上一轮记失败并继续执行下一轮条件判断
+  D003:
+    source: decision
+    text: 服务商迟到回调只更新对应历史轮次结果，不影响当前及后续轮次执行
+  D004:
+    source: decision
+    text: 人工处理与自动任务并行，页面仅提示自动任务，不限制人工触达或作业
+  D005:
+    source: decision
+    text: 执行时间与日切统一按尼日利亚 WAT（UTC+1），日切后终止当日任务
+  D006:
+    source: decision
+    text: MVP 自动工具范围为 IVR 和 AI Robot，最多支持 3 轮
+  D007:
+    source: decision
+    text: Web 端不新增操作界面，但 PRD 必须在 Web 端章节完整编写催收系统的 Decision Plan 解析、轮次执行、工具推送、结果覆盖、异常记录和案件退出规则；App 端单独成章，仅负责自动作业信息展示
+  D008:
+    source: decision
+    text: 异常信息不在 App 端展示，统一写入催收系统异常记录表，供后台查询与排障
+  D009:
+    source: decision
+    text: App 端展示项仅保留“当前案件有无其他工具正在作业”，不展示自动作业状态、轮次、执行结果或异常信息
